@@ -1,1 +1,0 @@
-# linn1024.github.io

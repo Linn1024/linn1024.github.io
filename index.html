@@ -1,16 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Button Example</title>
+  <title>Compliment Generator</title>
+  <style>
+    .button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to My Website</h1>
-  
-  <button onclick="myFunction()">Click Me</button>
-  
+  <h1>Compliment Generator</h1>
+  <button class="button" onclick="displayCompliment()">Button 1</button>
+  <button class="button" onclick="displayCompliment()">Button 2</button>
+  <button class="button" onclick="displayCompliment()">Button 3</button>
+
+  <p id="compliment"></p>
+
   <script>
-    function myFunction() {
-      alert("Button clicked!");
+    function displayCompliment() {
+      var compliments = [
+        "Ты красивая!",
+        "Ты умная!",
+        "Ты талантливая!",
+        "Ты добрая!",
+        "Ты смешная!",
+        "Ты обаятельная!",
+        "Ты великолепная!",
+        "Ты сильная!",
+        "Ты очаровательная!",
+        "Ты преданная!",
+        "Ты интеллигентная!",
+        "Ты изумительная!",
+        "Ты вдохновляющая!",
+        "Ты прекрасная!",
+        "Ты уникальная!",
+        "Ты заботливая!",
+        "Ты стильная!",
+        "Ты самая лучшая!",
+        "Ты неподражаемая!",
+        "Ты солнечная!"
+      ];
+
+      var randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
+
+      document.getElementById("compliment").innerHTML = "Инночка, " + randomCompliment;
     }
   </script>
 </body>

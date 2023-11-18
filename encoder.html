@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="windows-1252">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Conversion</title>
+</head>
+<body>
+    <h1>Text Conversion</h1>
+    <label for="inputText">Input Text:</label>
+    <textarea id="inputText" rows="4" cols="50"></textarea>
+    <br>
+    <button onclick="convertText()">Convert Text</button>
+    <br>
+    <label for="outputText">Output Text:</label>
+    <textarea id="outputText" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        function convertText() {
+            // Get input text from the textarea
+            var inputText = document.getElementById("inputText").value;
+            // Convert the inputText from Base64 to a Uint8Array
+            var uint8Array = new Uint8Array(inputText.length);
+            for (var i = 0; i < inputText.length; i++) {
+              uint8Array[i] = inputText.charCodeAt(i);
+            }
+
+            // Decode the Uint8Array using TextDecoder with windows-1252 encoding
+            var decoder = new TextDecoder("windows-1251");
+            var decodedText = decoder.decode(uint8Array);
+        
+            // Perform the conversion (encoding and decoding)
+            //var encodedText = new TextEncoder("ascii").encode(inputText);
+            //const byteString = String.fromCharCode.apply(null, encodedText);
+            //var decodedText = new TextDecoder('windows-1251').decode(encodedText);
+
+            // Set the converted text to the output textarea
+            document.getElementById("outputText").value = decodedText;
+        }
+    </script>
+</body>
+</html>

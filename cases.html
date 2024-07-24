@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .result {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .result .type {
+            font-weight: bold;
+            width: 150px;
+        }
+        .result .text {
+            flex-grow: 1;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Case Converter</h1>
+    <input type="text" id="inputWord" placeholder="Enter your word">
+    <button onclick="convertCases()">Convert</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        function splitWord(word) {
+            return word.split(/(?=[A-Z])|[\s_\-\.]/).filter(Boolean);
+        }
+
+        function toCamelCase(words) {
+            return words.map((word, index) => index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('');
+        }
+
+        function toPascalCase(words) {
+            return words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('');
+        }
+
+        function toSnakeCase(words) {
+            return words.map(word => word.toLowerCase()).join('_');
+        }
+
+        function toKebabCase(words) {
+            return words.map(word => word.toLowerCase()).join('-');
+        }
+
+        function toUpperSnakeCase(words) {
+            return words.map(word => word.toUpperCase()).join('_');
+        }
+
+        function toTrainCase(words) {
+            return words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('-');
+        }
+
+        function toFlatCase(words) {
+            return words.map(word => word.toLowerCase()).join('');
+        }
+
+        function toUpperFlatCase(words) {
+            return words.map(word => word.toUpperCase()).join('');
+        }
+
+        function toDotCase(words) {
+            return words.map(word => word.toLowerCase()).join('.');
+        }
+
+        function toSpaceCase(words) {
+            return words.map(word => word.toLowerCase()).join(' ');
+        }
+
+        function toCapitalCase(words) {
+            return words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+        }
+
+        function toMixedCase(words) {
+            return words.map(word => word.split('').map((char, index) => index % 2 === 0 ? char.toLowerCase() : char.toUpperCase()).join('')).join('');
+        }
+
+        function convertCases() {
+            const inputWord = document.getElementById('inputWord').value;
+            const words = splitWord(inputWord);
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            const cases = [
+                { type: 'Camel Case', text: toCamelCase(words) },
+                { type: 'Pascal Case', text: toPascalCase(words) },
+                { type: 'Snake Case', text: toSnakeCase(words) },
+                { type: 'Kebab Case', text: toKebabCase(words) },
+                { type: 'Upper Snake Case', text: toUpperSnakeCase(words) },
+                { type: 'Train Case', text: toTrainCase(words) },
+                { type: 'Flat Case', text: toFlatCase(words) },
+                { type: 'Upper Flat Case', text: toUpperFlatCase(words) },
+                { type: 'Dot Case', text: toDotCase(words) },
+                { type: 'Space Case', text: toSpaceCase(words) },
+                { type: 'Capital Case', text: toCapitalCase(words) },
+                { type: 'Mixed Case', text: toMixedCase(words) }
+            ];
+
+            cases.forEach(caseItem => {
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('result');
+
+                const typeDiv = document.createElement('div');
+                typeDiv.classList.add('type');
+                typeDiv.textContent = caseItem.type;
+
+                const textDiv = document.createElement('div');
+                textDiv.classList.add('text');
+                textDiv.textContent = caseItem.text;
+
+                resultDiv.appendChild(typeDiv);
+                resultDiv.appendChild(textDiv);
+
+                resultsDiv.appendChild(resultDiv);
+            });
+        }
+    </script>
+</body>
+</html>

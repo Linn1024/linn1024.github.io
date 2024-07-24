@@ -40,7 +40,7 @@
     
     <script>
         function splitWord(word) {
-            return word.split(/(?=[A-Z])|[\s_\-\.]/).filter(Boolean);
+            return word.split(/(?=[A-Z])|[\s_\-\./]/).filter(Boolean);
         }
 
         function toCamelCase(words) {

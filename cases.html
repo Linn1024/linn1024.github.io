@@ -12,6 +12,7 @@
         .result {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-top: 10px;
             padding: 10px;
             border: 1px solid #ccc;
@@ -21,6 +22,8 @@
         .result .type {
             font-weight: bold;
             width: 150px;
+            cursor: pointer;
+            color: blue;
         }
         .result .text {
             flex-grow: 1;
@@ -88,6 +91,12 @@
             return words.map(word => word.split('').map((char, index) => index % 2 === 0 ? char.toLowerCase() : char.toUpperCase()).join('')).join('');
         }
 
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
         function convertCases() {
             const inputWord = document.getElementById('inputWord').value;
             const words = splitWord(inputWord);
@@ -117,6 +126,7 @@
                 const typeDiv = document.createElement('div');
                 typeDiv.classList.add('type');
                 typeDiv.textContent = caseItem.type;
+                typeDiv.onclick = () => copyToClipboard(caseItem.text);
 
                 const textDiv = document.createElement('div');
                 textDiv.classList.add('text');

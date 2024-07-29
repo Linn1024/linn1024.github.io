@@ -45,8 +45,17 @@
             jsonDisplay.textContent = '';
 
             try {
-                // Replace single quotes with double quotes and parse to object
-                const dictString = input.replace(/'/g, '"');
+                // Safely handle the conversion
+                let dictString = input;
+                
+                // Replace Python None with JSON null, but avoid replacing "None" in strings
+                // Ensure None is not surrounded by quotes (i.e., replace only standalone None)
+                dictString = dictString.replace(/(?<!["'\\])None(?!["'\\])/g, 'null');
+                
+                // Replace single quotes with double quotes
+                dictString = dictString.replace(/'/g, '"');
+                
+                // Parse the modified string to JSON object
                 const dictObject = JSON.parse(dictString);
                 
                 // Convert dictionary object to JSON string

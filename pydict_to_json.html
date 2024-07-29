@@ -3,70 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dict to JSON Converter</title>
+    <title>Dict and JSON Converter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+        .form-container {
+            margin-bottom: 20px;
+        }
         textarea {
             width: 100%;
             height: 150px;
         }
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ddd;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        button {
+            margin-top: 10px;
+            margin-right: 5px;
         }
         .error {
             color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Dict to JSON Converter</h1>
-    <textarea id="dict-input" placeholder="Enter Python dict here"></textarea>
-    <button onclick="convertToJson()">Convert to JSON</button>
-    <div id="output">
-        <h2>Converted JSON</h2>
-        <pre id="json-display"></pre>
-        <p class="error" id="error-message"></p>
+    <h1>Dict and JSON Converter</h1>
+
+    <div class="form-container">
+        <h2>Python Dict to JSON</h2>
+        <form id="dict-form">
+            <textarea id="dict-input" placeholder="Enter Python dict here"></textarea>
+            <button type="button" onclick="convertToJson()">Convert to JSON</button>
+            <button type="button" onclick="copyToClipboard('dict-input')">Copy</button>
+            <p class="error" id="error-message-json"></p>
+        </form>
+    </div>
+
+    <div class="form-container">
+        <h2>JSON to Python Dict</h2>
+        <form id="json-form">
+            <textarea id="json-input" placeholder="Enter JSON here"></textarea>
+            <button type="button" onclick="convertToDict()">Convert to Python Dict</button>
+            <button type="button" onclick="copyToClipboard('json-input')">Copy</button>
+            <p class="error" id="error-message-dict"></p>
+        </form>
     </div>
 
     <script>
         function convertToJson() {
             const input = document.getElementById('dict-input').value;
-            const errorMessage = document.getElementById('error-message');
-            const jsonDisplay = document.getElementById('json-display');
+            const errorMessage = document.getElementById('error-message-json');
+            const jsonInput = document.getElementById('json-input');
             errorMessage.textContent = '';
-            jsonDisplay.textContent = '';
 
             try {
-                // Safely handle the conversion
                 let dictString = input;
-                
-                // Replace Python None with JSON null, but avoid replacing "None" in strings
-                // Ensure None is not surrounded by quotes (i.e., replace only standalone None)
                 dictString = dictString.replace(/(?<!["'\\])None(?!["'\\])/g, 'null');
-                
-                // Replace single quotes with double quotes
                 dictString = dictString.replace(/'/g, '"');
                 
-                // Parse the modified string to JSON object
                 const dictObject = JSON.parse(dictString);
-                
-                // Convert dictionary object to JSON string
                 const jsonString = JSON.stringify(dictObject, null, 4);
-                
-                // Display JSON string
-                jsonDisplay.textContent = jsonString;
+                jsonInput.value = jsonString;
             } catch (error) {
-                // Display error message
                 errorMessage.textContent = 'Invalid Python dict format. Please ensure it is a valid JSON-like string.';
             }
+        }
+
+        function convertToDict() {
+            const input = document.getElementById('json-input').value;
+            const errorMessage = document.getElementById('error-message-dict');
+            const dictInput = document.getElementById('dict-input');
+            errorMessage.textContent = '';
+
+            try {
+                const jsonObject = JSON.parse(input);
+                let dictString = JSON.stringify(jsonObject, null, 4);
+                
+                dictString = dictString.replace(/null/g, 'None');
+                dictString = dictString.replace(/"/g, "'");
+                dictString = dictString.replace(/(\w+):/g, '\n$1:');
+                
+                dictInput.value = dictString;
+            } catch (error) {
+                errorMessage.textContent = 'Invalid JSON format. Please ensure it is a valid JSON string.';
+            }
+        }
+
+        function copyToClipboard(textareaId) {
+            const textarea = document.getElementById(textareaId);
+            textarea.select();
+            document.execCommand('copy');
         }
     </script>
 </body>

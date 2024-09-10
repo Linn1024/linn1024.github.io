@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- saved from url=(0918)https://app.ardalio.com/WixStatsWorker?pageId=masterPage&compId=tpaWorker_20&viewerCompId=tpaWorker_20&siteRevision=383&viewMode=site&deviceType=desktop&locale=ru&regionalLanguage=ru&endpointType=worker&instance=iCJn9y1Ti-o3NbiOxt1UaG-E8YoxVL-3frML5scQEig.eyJpbnN0YW5jZUlkIjoiMGIwMGYyZWUtMGIwMS00YTg0LTk0ZDYtMmIyNGExMTJjN2IxIiwiYXBwRGVmSWQiOiIxMmNhMmZkNi1hNGM5LWI5MWYtYWU2Yy05NDg2OGIyYThmMWMiLCJzaWduRGF0ZSI6IjIwMjQtMDktMTBUMTc6MTk6MTguNDEyWiIsImRlbW9Nb2RlIjpmYWxzZSwiYWlkIjoiOGMwNDVkMjUtMmVjMC00NjI4LWEwNGYtYzU5ZTVmODMxYzA5Iiwic2l0ZU93bmVySWQiOiIwNTY3YTFhYS02M2M2LTRiNWQtOTU4NC1mZmY1N2NmNGNhNDEifQ&commonConfig=%7B%22brand%22%3A%22wix%22%2C%22host%22%3A%22VIEWER%22%2C%22bsi%22%3A%2208a308f3-9194-45d5-b074-b93deef21372%7C1%22%2C%22siteRevision%22%3A%22383%22%2C%22renderingFlow%22%3A%22NONE%22%2C%22BSI%22%3A%2208a308f3-9194-45d5-b074-b93deef21372%7C1%22%7D&currentRoute=.%2F&vsi=2b827c68-8daa-447f-9313-73f62f556024 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="referrer" content="no-referrer">
+<title></title>
+
+<script type="text/javascript" src="./wix.min.js.download"></script>
+<script>
+var wts7 = {};
+var WORKER_DATA = {};
+var version_number =  "8.329";
+var alias = "1927461";
+var db = "16";
+var status = "0";
+var test_mode = "no";
+var uses_embedded_script = "";
+var app_url = "app.ardalio.com";
+var parentOrigin;
+try{
+   const referrer = document.referrer;
+   const referrerUrl = new URL(referrer);
+   parentOrigin = referrerUrl.origin;
+}
+catch(e){ 
+   parentOrigin = "*";
+}
+
+if (document.readyState === "loading") {
+   document.addEventListener("DOMContentLoaded", function() {
+      checkForEmbeddedScript();
+      initializeWorker(); 
+   });
+} 
+else {
+   checkForEmbeddedScript();
+   initializeWorker(); 
+}
+
+///////////////////////////////////
+function checkForEmbeddedScript(){
+
+   window.parent.postMessage(alias+" worker loaded", parentOrigin);
+
+   const timeout = setTimeout(function() {
+      console.log("No embedded script");
+      if (uses_embedded_script == ""){
+         console.log("set no embedded script");
+         const data = new URLSearchParams({
+             action: "set_embedded_script",
+             alias: alias,
+             value: "no",
+             prev_value: uses_embedded_script
+         }).toString();
+         navigator.sendBeacon("https://"+app_url+"/wixStatsAjax.pl", data);
+      }
+   }, 7000);
+
+   window.addEventListener("message", function(event) {      
+      if (event.data == alias+" embedded script OK"){
+         console.log("embedded script OK");
+         clearTimeout(timeout);
+         if (uses_embedded_script != "yes"){
+            console.log("set embedded script to OK");
+            const data = new URLSearchParams({
+                action: "set_embedded_script",
+                alias: alias,
+                value: "yes",
+                prev_value: uses_embedded_script
+            }).toString();
+            navigator.sendBeacon("https://"+app_url+"/wixStatsAjax.pl", data);
+         }
+      }
+   });
+}
+
+
+/////////////////////////////
+function initializeWorker(){
+
+   if (Wix.Worker.Utils.getViewMode() != "site"){
+      return;
+   }
+
+   if (["1","2","3","4","5","9","13","14"].includes(status) || test_mode == "yes"){
+      Wix.Worker.addEventListener(Wix.Events.PAGE_NAVIGATION, function() {
+         window.location.reload();
+      });
+   }
+
+   if (["2","3","4","5","9","13","14"].includes(status)){
+      Wix.Worker.addEventListener(Wix.Events. MEMBER_DETAILS_UPDATED, function(event) {
+         var data = new URLSearchParams();
+         data.append("action", "member_edit");
+         data.append("alias", alias);
+         data.append("db", db);
+         data.append("data", JSON.stringify(event));
+         navigator.sendBeacon("https://"+app_url+"/wixStatsAjax.pl", data);
+      });
+   }
+
+   if (uses_embedded_script == "yes"){
+     // if (["2","3","4","5","9","13","14"].includes(status)){
+         Wix.Worker.currentMember( function(member) {
+            if (member && member.id){
+               wts7.user_id = member.id;
+               WORKER_DATA = {
+                  type: "workerData",
+                  value: wts7
+               };
+               window.parent.postMessage(WORKER_DATA, parentOrigin);  
+            }
+         });
+     // }
+   }
+   else{
+      // get all info and launch LogServer to record
+      Wix.Worker.getSiteInfo( function(siteInfo) {
+         wts7.url = siteInfo.url || "";
+         wts7.title = siteInfo.pageTitle || "";
+         wts7.page_name = wts7.title;  
+         wts7.referer = siteInfo.referer || siteInfo.referrer || "";
+         wts7.uses_embedded_script = uses_embedded_script;
+         //if (["2","3","4","5","9","13","14"].includes(status)){
+            Wix.Worker.currentMember( function(member) {
+               if (member && member.id){
+                  wts7.user_id = member.id;
+               }
+               printWorker();
+            });
+         //}
+         //else{
+         //   printWorker();
+         //}
+      }); 
+   }
+
+}
+
+////////////////////////
+function printWorker(){
+
+   wts7.origin = "WixStatsWorker";
+   wts7.user_status = "regular";
+   wts7.params = "wix";
+   wts7.invisible = "yes";
+
+   var wts=document.createElement("script");
+   wts.async=true;
+   wts.src="https://"+app_url+"/log7.js";
+   document.head.appendChild(wts);
+   wts.onload = function(){ wtslog7(alias,db,"","","","","WixStatsWorker"); };
+
+}
+
+
+/////////////////////////////////////////////
+function wixWorkerDebug7(e_text, e_object) {
+    console.log("error: " + e_text);
+    var errData = new URLSearchParams();
+    errData.append("e_text", e_text);
+    if (e_object) {
+      errData.append("e_object", e_object.toString() + " / e name: " + e_object.name + " e message: " + e_object.message);
+    }
+    errData.append("referrer", document.referrer);
+    errData.append("url", document.URL);
+    errData.append("version", version_number);
+    navigator.sendBeacon("https://"+app_url+"/beacon_e.pl", errData);
+    return;
+}
+
+</script>
+<style wix-style="">.Title{ font:normal normal normal 60px/1.4em impact,impact-w01-2010,impact-w02-2010,impact-w10-2010,sans-serif; } .Menu{ font:normal normal normal 14px/1.4em tahoma,tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular,sans-serif; } .Page-title{ font:normal normal normal 24px/1.4em tahoma,tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular,sans-serif; } .Heading-XL{ font:normal normal normal 63px/1.4em verdana,geneva,sans-serif; } .Heading-L{ font:normal normal normal 30px/1.4em tahoma,tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular,sans-serif; } .Heading-M{ font:normal normal normal 22px/normal tahoma,tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular,sans-serif; } .Heading-S{ font:normal normal normal 18px/1.4em tahoma,tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular,sans-serif; } .Body-L{ font:normal normal normal 17px/1.4em arial,ｍｓ ｐゴシック,ms pgothic,돋움,dotum,helvetica,sans-serif; } .Body-M{ font:normal normal normal 18px/1.4em arial,ｍｓ ｐゴシック,ms pgothic,돋움,dotum,helvetica,sans-serif; } .Body-S{ font:normal normal normal 13px/1.4em arial,ｍｓ ｐゴシック,ms pgothic,돋움,dotum,helvetica,sans-serif; } .Body-XS{ font:normal normal normal 12px/1.4em arial,ｍｓ ｐゴシック,ms pgothic,돋움,dotum,helvetica,sans-serif; } }</style><link type="text/css" rel="stylesheet" href="./languages-woff2.css"><link type="text/css" rel="stylesheet" href="./wixMadefor.css"><style>:focus {
+    outline: none;
+}
+
+.js-focus-visible .focus-visible:focus,
+.js-focus-visible .focus-visible:focus ~ .wixSdkShowFocusOnSibling
+{
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 1px 2px #3899EC;
+}
+</style><script src="./focus-visible.min.js.download" id="dynamic_script_FOCUS_VISIBLE"></script><script async="" src="./log7.js.download"></script></head>
+<body class="js-focus-visible">
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'8c111513ac323356',t:'MTcyNTk4ODc2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;" src="./saved_resource(1).html"></iframe>
+<div id="volume-booster-visusalizer">
+                <div class="sound">
+                    <div class="sound-icon"></div>
+                    <div class="sound-wave sound-wave_one"></div>
+                    <div class="sound-wave sound-wave_two"></div>
+                    <div class="sound-wave sound-wave_three"></div>
+                </div>
+                <div class="segments-box">
+                    <div data-range="1-20" class="segment"><span></span></div>
+                    <div data-range="21-40" class="segment"><span></span></div>
+                    <div data-range="41-60" class="segment"><span></span></div>
+                    <div data-range="61-80" class="segment"><span></span></div>
+                    <div data-range="81-100" class="segment"><span></span></div>
+                </div>
+            </div></body></html>

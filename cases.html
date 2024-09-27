@@ -40,7 +40,13 @@
     
     <script>
         function splitWord(word) {
-            return word.split(/(?=[A-Z])|[\s_\-\./]/).filter(Boolean);
+            if (word.includes('_') && word === word.toUpperCase()) {
+                // Handle UPPER_SNAKE_CASE
+                return word.split('_').map(w => w.toLowerCase());
+            } else {
+                // Handle other cases (CamelCase, PascalCase, etc.)
+                return word.split(/(?=[A-Z])|[\s_\-\./]/).filter(Boolean).map(w => w.toLowerCase());
+            }
         }
 
         function toCamelCase(words) {

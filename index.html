@@ -1,3 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Between Lists</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        .list {
+            display: none;
+            margin: 20px;
+        }
+        .active {
+            display: block;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Switch Between Two Lists</h1>
+    <div id="list1" class="list active">
+        <h2>List 1</h2>
+        <p>
 001 NUACA2<br>Artak Avetisyan, Artyom Tadevosyan, Narek Gharagyozyan<br>
 002 BEU: 5<br>Tural Aliyev, Gadir Rahmatov, Elmir Rzazade<br>
 003 IBSU 3<br>Teimuraz Soselia, Daniel Kolotashvili, Davit Ioramashvili<br>
@@ -56,3 +88,102 @@
 065 *Veterans of ACM<br>Aleksandre Khokhiashvili, Iva Topuria, Vano Gamezardashvili<br>
 066 BHOS: 2<br>Murad Akhundov, Ferid Mehtiyev, Vusat Orujov<br>
 067 Baku SU: 7<br>Tural Bayramlı, Mahmud Ramazanov, Umid Verdiyev<br>
+
+        </p>
+    </div>
+    <div id="list2" class="list">
+        <h2>List 2</h2>
+        <p>
+001 Emil Inochkin<br>
+002 Giorgi Gelashvili<br>
+003 Khizri Sakhrayev<br>
+004 Luka Turabelidze<br>
+005 Robert Kocharyan<br>
+006 Aleqsandre Dolaqidze<br>
+007 Vasili Dandurishvili<br>
+008 Rafayel Susanyan<br>
+009 Gulmirza Aliyev<br>
+010 Givi Modebadze<br>
+111 Sergey Martirosyan<br>
+011 Saba Lomsadze<br>
+012 Demetre Gelashvili<br>
+013 Sergey Grigoryan<br>
+014 Emin Orujov<br>
+015 Luka Darsalia<br>
+016 Mahammad Hasanov<br>
+017 Hamlet Petrosyan<br>
+018 Alikamran Rzayev<br>
+021 Irakli Khutsishvili<br>
+022 Sadig Malikov<br>
+023 Saleh Isayev<br>
+024 Tornike Shubitidze<br>
+025 Hikmat Azimzade<br>
+026 Daniel Kolotashvili<br>
+027 Sahib Aliyev<br>
+028 Nikoloz Kalandadze<br>
+029 Levan Namicheishvili<br>
+030 Jamil Jamaladdinli<br>
+131 Nijat Alaskarli<br>
+031 Ulvi Sadigzade<br>
+032 Tahir Aliyev<br>
+033 Nika Tamliani<br>
+034 Anri Arkania<br>
+035 Giorgi Ebanoidze<br>
+036 Syuzanna Grigoryan<br>
+037 Ali Khalilov<br>
+038 Albert Barbashahinyan<br>
+039 Farid Gurbanov<br>
+040 Davit Khvedelidze<br>
+141 Vusat Orujov<br>
+041 Vahagn Tsirunyan<br>
+042 Umid Verdiyev<br>
+043 Erekle Khomasuridze<br>
+044 Yuri Dolukhanyan<br>
+045 Amir Alakbarli<br>
+046 Meri Badalyan<br>
+047 Javad Gurbanov<br>
+048 Hakob Ayvazyan<br>
+049 Tevdore Nadareishvili<br>
+050 Nihat Mammadli<br>
+151 Giorgi Kobakhia<br>
+152 Tigran Melkonyan<br>
+051 Tural Aliyev<br>
+052 Raul Jafarli<br>
+053 Giorgi Velijanashvili<br>
+054 Davit Yengoyan<br>
+055 Farid Tariverdiyev<br>
+056 Davit Badishyan<br>
+057 Rustam Tahmazov<br>
+058 Amaras Nazarians<br>
+059 Rasul Gasimli<br>
+060 Raul Aghayev<br>
+161 Teimuraz Soselia<br>
+162 Yaghmur Novruzlu<br>
+061 Samvel Andreasyan<br>
+062 Otar Kukhianidze<br>
+063 Armen Berujanyan<br>
+064 Aykhan Damirli<br>
+065 Dachi Suramelashvili<br>
+066 Gevorg Boyakhchyan<br>
+067 Davit Ioramashvili<br>
+068 Narmin Mammadova<br>
+069 Luka Balanchivadze<br>
+070 Luka Sanarski<br>
+
+        </p>
+    </div>
+    <button onclick="showList('list1')">Show List 1</button>
+    <button onclick="showList('list2')">Show List 2</button>
+
+    <script>
+        function showList(listId) {
+            // Hide all lists
+            document.querySelectorAll('.list').forEach(list => {
+                list.classList.remove('active');
+            });
+            // Show the selected list
+            document.getElementById(listId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

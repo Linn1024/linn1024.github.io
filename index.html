@@ -1,197 +1,554 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Switch Between Lists</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        .list {
-            display: none;
-            margin: 20px;
-        }
-        .active {
-            display: block;
-        }
-        button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seating Finder (No images)</title>
+  <style>
+    :root{
+      --bg:#0b0d12; --panel:#121726; --panel2:#0f1422; --text:#e7eaf2; --muted:#a9b0c3;
+      --accent:#7aa2ff; --border:rgba(255,255,255,.10); --shadow:0 16px 40px rgba(0,0,0,.45);
+      --seat:#223056; --seat2:#1a2443; --hl:#7aa2ff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 10% 0%,#131a35 0%,var(--bg) 55%) fixed;color:var(--text)}
+    header{padding:18px 18px 10px;border-bottom:1px solid var(--border);background:rgba(18,23,38,.55);backdrop-filter:blur(10px);position:sticky;top:0;z-index:50}
+    h1{margin:0;font-size:18px;font-weight:800}
+    .sub{margin-top:6px;color:var(--muted);font-size:13px}
+    .tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .tab-btn{appearance:none;border:1px solid var(--border);background:rgba(15,20,34,.65);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:700;font-size:13px}
+    .tab-btn.active{background:rgba(122,162,255,.18);border-color:rgba(122,162,255,.55)}
+    main{padding:16px 18px 28px;display:grid;grid-template-columns:420px 1fr;gap:14px;align-items:start}
+    @media (max-width:980px){main{grid-template-columns:1fr}}
+    .card{border:1px solid var(--border);border-radius:18px;background:linear-gradient(180deg,rgba(18,23,38,.85),rgba(15,20,34,.70));box-shadow:var(--shadow);overflow:hidden}
+    .card-h{padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(10,12,18,.15)}
+    .title{font-size:13px;font-weight:900;letter-spacing:.3px}
+    .card-b{padding:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .input{width:100%;padding:11px 12px;border-radius:14px;border:1px solid var(--border);background:rgba(10,12,18,.35);color:var(--text);outline:none;font-size:14px}
+    .select{padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:rgba(10,12,18,.35);color:var(--text);outline:none;font-size:14px;cursor:pointer}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(10,12,18,.35);color:var(--muted);font-size:12px;user-select:none}
+    .pill b{color:var(--text)}
+    .list{margin-top:10px;display:grid;gap:8px}
+    .item{border:1px solid var(--border);border-radius:14px;background:rgba(10,12,18,.28);padding:10px;cursor:pointer}
+    .item:hover{border-color:rgba(122,162,255,.40);background:rgba(10,12,18,.36)}
+    .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+    .team{font-weight:900;font-size:14px}
+    .seat{font-weight:900;font-size:14px;color:var(--accent)}
+    .meta{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.25}
+    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35}
+
+    /* SVG plan */
+    .plan-wrap{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:rgba(10,12,18,.25)}
+    svg{display:block;width:100%;height:auto}
+    .seat-node{cursor:pointer}
+    .seat-circle{fill:rgba(34,48,86,.9);stroke:rgba(255,255,255,.18);stroke-width:1.2}
+    .seat-label{fill:rgba(231,234,242,.92);font-weight:900;font-size:10px;text-anchor:middle;dominant-baseline:middle;user-select:none}
+    .seat-hl .seat-circle{fill:rgba(122,162,255,.55);stroke:rgba(255,255,255,.92);stroke-width:2.5}
+    .seat-hl .seat-label{fill:#fff}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block;vertical-align:middle}
+  </style>
 </head>
 <body>
-        <button onclick="showList('list1')">Teams</button>
-    <button onclick="showList('list2')">Individual</button>
-        <button onclick="showList('image')">Computers numbers picture</button>
+<header>
+  <h1>Seating Finder</h1>
+  <div class="sub">No images: the plan is drawn as an interactive map. Type your team name (aliases work).</div>
+  <div class="tabs" id="tabs"></div>
+</header>
 
-
-    <h1>Arrangement</h1>
-    <div id="list1" class="list active">
-        <h2>Teams</h2>
-        <p>
-001 NUACA2<br>Artak Avetisyan, Artyom Tadevosyan, Narek Gharagyozyan<br>
-002 BEU: 5<br>Tural Aliyev, Gadir Rahmatov, Elmir Rzazade<br>
-003 IBSU 3<br>Teimuraz Soselia, Daniel Kolotashvili, Davit Ioramashvili<br>
-004 Tbilisi FreeUni 6<br>Giorgi Ebanoidze, Dachi Suramelashvili, Luka Turabelidze<br>
-005 Yerevan SU: Improvis<br>Davit Yengoyan, Gevorg Boyakhchyan, Hakob Ayvazyan<br>
-006 NAA: 2<br>Ali Asadov, Gulmirze Eliyev, Ferid Qasimov<br>
-007 Yerevan SU: VSR: Very Serious Round<br>Vahagn Tsirunyan, Rafayel Susanyan, Sergey Grigoryan<br>
-008 *Tbilisi FreeUni 15<br>Ana Sepiashvili, Davit Shanidze, Mariam Tsutskiridze<br>
-009 Khazar U: 1<br>Farid Aliyev, Ruslan Karimov, Javad Gurbanov<br>
-011 ADA U: 2<br>Nijat Alaskarli, Emil Inochkin, Nihat Mammadli<br>
-012 Tbilisi CU 3<br>Akaki Gochashvili, Andria Kelekhsaevi, Saba Tsitaishvili<br>
-014 ADA U: 12<br>Isgandar Jafarli, Farid Tariverdiyev, Faig Tayibov<br>
-015 *Tbilisi FreeUni 16<br>Tekla Vadakaria, Mate Arevadze, Saba Prangulashvili<br>
-016 Yerevan SU: Binary Bullets<br>Syuzanna Grigoryan, Davit Badishyan, Meri Badalyan<br>
-017 *Tbilisi FreeUni 4<br>Luka Lomadze, Aleqsandre Dolaqidze, Tornike Shubitidze<br>
-018 APA: 3<br>Ahmed Ismayilov, Ali Khalilov, Ulkar Kuhi<br>
-021 *AZSchools 2<br>Aykhan Damirli, Raul Jafarli, Tahir Aliyev<br>
-022 BEU: 1<br>Sadiq Melikov, Nariman Sayilov, Ziya Hasanov<br>
-023 Tbilisi FreeUni 2<br>Demetre Gelashvili, Irakli Khutsishvili, Giorgi Kobakhia<br>
-024 Slice & Volley<br>Alexander Oniani, Lasha Kvatashidze, Giorgi Sakhelashvili<br>
-026 Karabakh U: 1<br>Mahammad Hasanov, Cahangir Mammedov, Emil Xanquliyev<br>
-027 Tbilisi FreeUni 5<br>Saba Losaberidze, Vasili Dandurishvili, Tornike Beria<br>
-028 AUA1<br>Amaras Nazarians, Armen Berujanyan, Tigran Melkonyan<br>
-029 Tbilisi SU 1<br>Bakari Gamezardashvili, Davit Khvedelidze, Luka Macharashvili<br>
-030 ADA U: 7<br>Shahmar Aghayev, Shamkhal Huseynzada, Rustam Tahmazov<br>
-031 ASPU SABAH: 1<br>Royal Adgozalov, Yagub Khalilli, Fidan Hasanzade<br>
-032 ZAZA<br>Mate Gvetadze, Ani Purtskhvanidze, Liziko Kebuladze<br>
-033 Yerevan SU: good knight<br>Robert Kocharyan, Samvel Andreasyan, Hamlet Petrosyan<br>
-034 Tbilisi FreeUni 7<br>Revaz Bechvaia, Badri Losaberidze, Luka Liklikadze<br>
-035 ASOIU: 3<br>Ravan Khaligov, Ismayil Murshudzada, Farid Qurbanov<br>
-036 ADA U: 1<br>Sahib Aliyev, Rasul Gasimli, Khizri Sakhrayev<br>
-038 Tbilisi FreeUni 13<br>Nika Mirimanashvili, Nika Pkhaladze, Besarioni Managadze<br>
-039 *ADA U: 8<br>Ravan Sadigzade, Saleh Gasimli, Shahin Alakbarli<br>
-040 *Tbilisi FreeUni 11<br>Dato Zirakashvili, Giorgi Zabakhidze, Nikoloz Kalandadze<br>
-041 UNEC 1:<br>Emin Haziyev, Yahya Jamalzade, Yaghmur Novruzlu<br>
-042 *Tbilisi FreeUni 8<br>Luka Balanchivadze, Luka Darsalia, Giorgi Velijanashvili<br>
-044 UFAZ: 11<br>Nazim Ganizada, Rafi Mammadov, Mirjalal Seyidli<br>
-045 *IBSU 1<br>Anri Abuladze, Nikusha Ovashvili, Beka Razmadze<br>
-046 NUACA3<br>Vahan Avetisyan, Norayr Hakobyan, Sergey Vardanyan<br>
-047 AU: 1<br>Alican Mikayilov, Huseynqulu Rzayev, Ulvi Sadigzade<br>
-048 *Tbilisi FreeUni 3<br>Keti Tchitchinadze, Giorgi Gelashvili, Luka Sanarski<br>
-049 Tbilisi FreeUni 1<br>Tarash Dolaberidze, Giorgi Nadareishvili, Nikoloz Tsimakuridze<br>
-050 UFAZ: 10<br>Anar Aghayarli, Mahammad Aliyev, Fagan Fataliyev<br>
-051 Tbilisi CU 1<br>Lasha Kardava, Luka Chrelashvili, Aleksandre Zarnadze<br>
-052 UFAZ: 1<br>Pavel Kuznetsov, Alikamran Rzayev, Nail Shamsudinov<br>
-053 Kutaisi ATSU3<br>Anri Arkania, Otar Kukhianidze, Levan Namicheishvili<br>
-054 WCU: 1<br>Tural Agayev, Elnur Jafarov, Farid Mammadov<br>
-055 AUA2<br>Albert Barbashahinyan, Sergey Martirosyan, Yuri Dolukhanyan<br>
-056 SSU: 3<br>Emil Abbasov, Coshgun Babayev, Rovnag Nadirov<br>
-057 BHOS: 1<br>Saleh Isayev, Jamil Jamaladdinli, Emin Orujov<br>
-058 Tbilisi FreeUni 12<br>Giorgi Bendianishvili, Givi Modebadze, Giorgi Kutchava<br>
-061 ADA U: 6<br>Raul Aghayev, Ibrahim Aghazada, Murad Tagizade<br>
-062 AzUAC: 1<br>Hikmet Ezimzade, Seyidagha Kazimli, Nihat Quliyev<br>
-063 MoseMusaMoshe<br>Erekle Khomasuridze, Tevdore Nadareishvili, Nika Tamliani<br>
-064 AzTU: 6<br>Ilkin Alakbarli, Amir Alakbarli, Tunar Mammadli<br>
-065 *Veterans of ACM<br>Aleksandre Khokhiashvili, Iva Topuria, Vano Gamezardashvili<br>
-066 BHOS: 2<br>Murad Akhundov, Ferid Mehtiyev, Vusat Orujov<br>
-067 Baku SU: 7<br>Tural Bayramlı, Mahmud Ramazanov, Umid Verdiyev<br>
-
-        </p>
+<main>
+  <section class="card">
+    <div class="card-h">
+      <div class="title">Search</div>
+      <span class="pill">Matches: <b id="matchCount">0</b></span>
     </div>
-    <div id="list2" class="list">
-        <h2>Individual</h2>
-        <p>
-001 Emil Inochkin<br>
-002 Giorgi Gelashvili<br>
-003 Khizri Sakhrayev<br>
-004 Luka Turabelidze<br>
-005 Robert Kocharyan<br>
-006 Aleqsandre Dolaqidze<br>
-007 Vasili Dandurishvili<br>
-008 Rafayel Susanyan<br>
-009 Gulmirza Aliyev<br>
-010 Givi Modebadze<br>
-111 Sergey Martirosyan<br>
-011 Saba Lomsadze<br>
-012 Demetre Gelashvili<br>
-013 Sergey Grigoryan<br>
-014 Emin Orujov<br>
-015 Luka Darsalia<br>
-016 Mahammad Hasanov<br>
-017 Hamlet Petrosyan<br>
-018 Alikamran Rzayev<br>
-021 Irakli Khutsishvili<br>
-022 Sadig Malikov<br>
-023 Saleh Isayev<br>
-024 Tornike Shubitidze<br>
-025 Hikmat Azimzade<br>
-026 Daniel Kolotashvili<br>
-027 Sahib Aliyev<br>
-028 Nikoloz Kalandadze<br>
-029 Levan Namicheishvili<br>
-030 Jamil Jamaladdinli<br>
-131 Nijat Alaskarli<br>
-031 Ulvi Sadigzade<br>
-032 Tahir Aliyev<br>
-033 Nika Tamliani<br>
-034 Anri Arkania<br>
-035 Giorgi Ebanoidze<br>
-036 Syuzanna Grigoryan<br>
-037 Ali Khalilov<br>
-038 Albert Barbashahinyan<br>
-039 Farid Gurbanov<br>
-040 Davit Khvedelidze<br>
-141 Vusat Orujov<br>
-041 Vahagn Tsirunyan<br>
-042 Umid Verdiyev<br>
-043 Erekle Khomasuridze<br>
-044 Yuri Dolukhanyan<br>
-045 Amir Alakbarli<br>
-046 Meri Badalyan<br>
-047 Javad Gurbanov<br>
-048 Hakob Ayvazyan<br>
-049 Tevdore Nadareishvili<br>
-050 Nihat Mammadli<br>
-151 Giorgi Kobakhia<br>
-152 Tigran Melkonyan<br>
-051 Tural Aliyev<br>
-052 Raul Jafarli<br>
-053 Giorgi Velijanashvili<br>
-054 Davit Yengoyan<br>
-055 Farid Tariverdiyev<br>
-056 Davit Badishyan<br>
-057 Rustam Tahmazov<br>
-058 Amaras Nazarians<br>
-059 Rasul Gasimli<br>
-060 Raul Aghayev<br>
-161 Teimuraz Soselia<br>
-162 Yaghmur Novruzlu<br>
-061 Samvel Andreasyan<br>
-062 Otar Kukhianidze<br>
-063 Armen Berujanyan<br>
-064 Aykhan Damirli<br>
-065 Dachi Suramelashvili<br>
-066 Gevorg Boyakhchyan<br>
-067 Davit Ioramashvili<br>
-068 Narmin Mammadova<br>
-069 Luka Balanchivadze<br>
-070 Luka Sanarski<br>
-
-        </p>
+    <div class="card-b">
+      <input id="q" class="input" placeholder="Start typing your team name… (aliases work too)" autocomplete="off" />
+      <div class="row" style="margin-top:10px;">
+        <select id="roomSelect" class="select"></select>
+        <span class="pill">Room: <b id="roomName">—</b></span>
+      </div>
+      <div class="list" id="list"></div>
+      <div class="hint">Click a team row to highlight the seat on the plan.</div>
     </div>
-        <!-- Изображение -->
-    <div id="image" class="content">
-        <h2>Computers arrangement in class</h2>
-        <img src="arrangement.jpg" alt="Placeholder Image">
-    </div>
+  </section>
 
-    <script>
-        function showList(listId) {
-            // Hide all lists
-            document.querySelectorAll('.list').forEach(list => {
-                list.classList.remove('active');
-            });
-            // Show the selected list
-            document.getElementById(listId).classList.add('active');
-        }
-    </script>
+  <section class="card">
+    <div class="card-h">
+      <div class="title">Room plan (SVG)</div>
+      <span class="pill">Selected: <b id="selectedInfo">—</b></span>
+    </div>
+    <div class="card-b">
+      <div class="plan-wrap" id="planWrap"></div>
+
+      <div class="legend">
+        <span class="pill"><span class="dot" style="background:rgba(34,48,86,.9)"></span>&nbsp;Seat</span>
+        <span class="pill"><span class="dot" style="background:rgba(122,162,255,.55)"></span>&nbsp;Highlighted</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const CONFIG = {
+  rooms: [
+    {
+      id: "room1",
+      name: "602",
+      seats: {
+        "1":  { x: 10, y: 80 },
+        "2":  { x: 10, y: 68 },
+        "3":  { x: 10, y: 56 },
+        "4":  { x: 10, y: 44 },
+        "5":  { x: 10, y: 32 },
+
+        "6":  { x: 36, y: 80 },
+        "7":  { x: 36, y: 70 },
+        "8":  { x: 36, y: 64 },
+        "9":  { x: 36, y: 58 },
+        "10": { x: 36, y: 54 },
+
+        "11": { x: 36, y: 48 },
+        "12": { x: 36, y: 44 },
+        "13": { x: 36, y: 38 },
+        "14": { x: 36, y: 34 },
+        "15": { x: 36, y: 28 },
+
+        "16": { x: 65, y: 80 },
+        "17": { x: 65, y: 68 },
+        "18": { x: 65, y: 56 },
+        "19": { x: 65, y: 44 },
+        "20": { x: 65, y: 32 },
+      }
+    },
+    {
+      id: "room2",
+      name: "603",
+      seats: {
+        "21": { x: 12, y: 92 },
+        "22": { x: 22, y: 92 },
+        "23": { x: 32, y: 92 },
+        "24": { x: 42, y: 92 },
+
+        "25": { x: 56, y: 80 },
+        "26": { x: 56, y: 68 },
+        "27": { x: 56, y: 56 },
+        "28": { x: 56, y: 44 },
+        "29": { x: 56, y: 32 },
+        "30": { x: 56, y: 20 },
+        "31": { x: 56, y: 8 },
+
+        "32": { x: 68, y: 82 },
+        "33": { x: 68, y: 78 },
+        "34": { x: 68, y: 72 },
+        "35": { x: 68, y: 68 },
+        "36": { x: 68, y: 62 },
+        "37": { x: 68, y: 58 },
+        "38": { x: 68, y: 52 },
+        "39": { x: 68, y: 46 },
+        "40": { x: 68, y: 42 },
+        "41": { x: 68, y: 36 },
+        "42": { x: 68, y: 32 },
+        "43": { x: 68, y: 26 },
+
+        "44": { x: 88, y: 80 },
+        "45": { x: 88, y: 68 },
+        "46": { x: 88, y: 56 },
+        "47": { x: 88, y: 44 },
+        "48": { x: 88, y: 32 },
+        "49": { x: 88, y: 20 },
+      }
+    }
+  ],
+
+  contests: [
+    {
+      id: "contestA",
+      name: "Teams",
+      teams: [
+  { seat: "1",  team: "ADA University — ADA U 1", aliases: ["ADA U 1","Elvin Orujov","Rasul Gasimli","Khizri Sakhrayev"], roomId: "1" },
+  { seat: "2",  team: "Yerevan State University — Ctrl+Alt+Derive", aliases: ["Ctrl+Alt+Derive","Sergey Grigoryan","Ruben Hambardzumyan","Rafayel Susanyan"], roomId: "1" },
+  { seat: "3",  team: "Free University of Tbilisi — Tbilisi FreeUni 1", aliases: ["Tbilisi FreeUni 1","Mate Zhorzholiani","Tarash Dolaberidze","Giorgi Nadareishvili"], roomId: "1" },
+  { seat: "4",  team: "ADA University — ADA U 10", aliases: ["ADA U 10","Ravan Sadigzade","Shahin Alakbarli","Saleh Gasimli"], roomId: "1" },
+  { seat: "5",  team: "Akaki Tsereteli State University — Kutaisi ATSU 1", aliases: ["Kutaisi ATSU 1","Otar Kukhianidze","Levan Namicheishvili","Anri Arkania"], roomId: "1" },
+  { seat: "6",  team: "National Aviation Academy — NAA 1", aliases: ["NAA 1","Ferid Qasimov","Gulmirze Eliyev","Ali Asadov"], roomId: "1" },
+  { seat: "7",  team: "Free University of Tbilisi — Tbilisi FreeUni 3", aliases: ["Tbilisi FreeUni 3","Giorgi Zabakhidze","Luka Aladashvili","Nikoloz Kalandadze"], roomId: "1" },
+  { seat: "8",  team: "ADA University — ADA U 12", aliases: ["ADA U 12","Orkhan Shahmuradli","Aliyyiakbar Shirinli","Ali Hasanli"], roomId: "1" },
+  { seat: "9",  team: "Azerbaijan State University of Economics - UNEC — AzSUE-UNEC 2", aliases: ["AzSUE-UNEC 2","Yahya Jamalzade","Yusif Abbaszade","Bahram Bakhtiyar"], roomId: "1" },
+  { seat: "10", team: "Baku Engineering University — BEU 1", aliases: ["BEU 1","Nizami Taghizada","Ziya Hasanov","Omar Aliyev"], roomId: "1" },
+  { seat: "11", team: "American University of Armenia — AUA2", aliases: ["AUA2","Albert Barbashahinyan","Yuri Dolukhanyan","Sergey Martirosyan"], roomId: "1" },
+  { seat: "12", team: "Baku Engineering University — BEU 8", aliases: ["BEU 8","Elton Satiyev","Shamil Aliyev","Murad Aminli"], roomId: "1" },
+  { seat: "13", team: "Baku State University — BSU 1", aliases: ["BSU 1","Nihat Garibli","Vugar Guliyev","Miraga Aliyev"], roomId: "1" },
+  { seat: "14", team: "Oguz Han Engineering and Technology University of Turkmenistan — oguzlar", aliases: ["oguzlar","Shahzod Halliyyev","Bayram Babagulyyev","Rovshen Tagangylyjov"], roomId: "1" },
+  { seat: "15", team: "Institute of Telecommunications and Informatics of Turkmenistan — ttweii1", aliases: ["ttweii1","Seyit Geldiyev","Nurgeldi Dovletov","Muhammetali Ashyrmuhammedov"], roomId: "1" },
+  { seat: "16", team: "American University of Armenia — AUA1", aliases: ["AUA1","Amaras Nazarians","Tsovak Yegoryan","Armen Berujanyan"], roomId: "1" },
+  { seat: "17", team: "International Black Sea University — IBSU 2", aliases: ["IBSU 2","Daniel Kolotashvili","Davit Ioramashvili","Teimuraz Soselia"], roomId: "1" },
+  { seat: "18", team: "Baku Higher Oil School — BHOS 3", aliases: ["BHOS 3","Anar Bastanov","Fuad Aliyev","Aytaj Abdullayeva"], roomId: "1" },
+  { seat: "19", team: "Free University of Tbilisi — Tbilisi FreeUni 16", aliases: ["Tbilisi FreeUni 16","Giorgi Ebanoidze","Dachi Suramelashvili","Luka Turabelidze"], roomId: "1" },
+  { seat: "20", team: "Yerevan State University — The Lion", aliases: ["The Lion","Stepan Gevorgyan","Mher Aghayan","Tigran Sargsyan"], roomId: "1" },
+  { seat: "21", team: "International University for the Humanities and Development — IUHD 2", aliases: ["IUHD 2","Nurmyrat Atayev","Muhammetmyrat Shamuradov","Ihlasbek Ismailov"], roomId: "2" },
+  { seat: "22", team: "International University for the Humanities and Development — IUHD 3", aliases: ["IUHD 3","Eziz Bayramov","Kerim Toylyyev","Rovshen Bayramov"], roomId: "2" },
+  { seat: "23", team: "Oguz Han Engineering and Technology University of Turkmenistan — UniqueCoders", aliases: ["UniqueCoders","Veli-Han Veliyev","Guych Saryyev","Begench Allakov"], roomId: "2" },
+  { seat: "24", team: "Russian-Armenian (Slavonick) State University — 4 Torvec", aliases: ["4 Torvec","Anatoly Ammosov","Nelli Voskanyan","Davit Bakhshyan"], roomId: "2" },
+  { seat: "25", team: "Caucasus University — Tbilisi CU 1", aliases: ["Tbilisi CU 1","Lasha Kardava","Luka Chrelashvili","Aleksandre Zarnadze"], roomId: "2" },
+  { seat: "26", team: "Karabakh University — Karabakh U 1", aliases: ["Karabakh U 1","Jahangir Mammadov","Elnur Mammadov","Mahammad Hasanov"], roomId: "2" },
+  { seat: "27", team: "Free University of Tbilisi — Tbilisi FreeUni 4", aliases: ["Tbilisi FreeUni 4","Daviti Khakhiashvili","Lia Chitishvili","Giorgi Abashidze"], roomId: "2" },
+  { seat: "28", team: "Khazar University — Khazar U 1", aliases: ["Khazar U 1","Huseyn Moylayev","Rasul Ismayilzade","Javad Gurbanov"], roomId: "2" },
+  { seat: "29", team: "Kutaisi International University — Gautie", aliases: ["Gautie","Tevdore Nadareishvili","Nika Tamliani","Erekle Khomasuridze"], roomId: "2" },
+  { seat: "30", team: "ADA University — ADA U 2", aliases: ["ADA U 2","Tahir Aliyev","Nijat Alaskarli","Sahib Aliyev"], roomId: "2" },
+  { seat: "31", team: "National University of Architecture and Construction of Armenia — NUACA1", aliases: ["NUACA1","Artak Avetisyan","Mane Mkrtchyan","Narek Gharagyozyan"], roomId: "2" },
+  { seat: "32", team: "ADA University — ADA U 7", aliases: ["ADA U 7","Farid Tariverdiyev","Faig Tayibov","Movlan Amanov"], roomId: "2" },
+  { seat: "33", team: "French-Azerbaijani University — UFAZ 18", aliases: ["UFAZ 18","Elnur Hagverdiyev","Pavel Kuznetsov","Ayan Ismayilova"], roomId: "2" },
+  { seat: "34", team: "Baku Higher Oil School — BHOS 9", aliases: ["BHOS 9","Shamil Mantashli","Ilham Yaqubzada","Elmar Osmanli"], roomId: "2" },
+  { seat: "35", team: "Free University of Tbilisi — Tbilisi FreeUni 8", aliases: ["Tbilisi FreeUni 8","Daviti Shonia","Luka Darsalia","Giorgi Velijanashvili"], roomId: "2" },
+  { seat: "36", team: "French-Azerbaijani University — UFAZ 4", aliases: ["UFAZ 4","Emin Bayramov","Mir Said Hesenzade","Toghrul Mardiyev"], roomId: "2" },
+  { seat: "37", team: "Russian-Armenian (Slavonick) State University — 1 GALENA", aliases: ["1 GALENA","Edgar Khachatryan","Tigran Avagyan","Garnik Khroyan"], roomId: "2" },
+  { seat: "38", team: "National University of Architecture and Construction of Armenia — NUACA2", aliases: ["NUACA2","Vahan Avetisyan","Aram Karakeshishyan","Hayk Sargsyan"], roomId: "2" },
+  { seat: "39", team: "Azerbaijan Technical University — AzTU 4", aliases: ["AzTU 4","Alimdar Musayev","Yusif İsmayılov","Samad Mastanov"], roomId: "2" },
+  { seat: "40", team: "Russian-Armenian (Slavonick) State University — 2 AMH", aliases: ["2 AMH","Anahit Arakelyan","Maria Drambyan","Hrayr Barseghyan"], roomId: "2" },
+  { seat: "41", team: "Azerbaijan University — Azerbaijan U 1", aliases: ["Azerbaijan U 1","Cəsur İsmayılov","Ulvi Sadigzade","Nihat Aliyev"], roomId: "2" },
+  { seat: "42", team: "National Aviation Academy — NAA 2", aliases: ["NAA 2","Amil Emiraslanov","Arzu Mustafayeva","Sadiq Melikov"], roomId: "2" },
+  { seat: "43", team: "Yagshygeldi Kakayev International Oil and Gas University — Olimp1", aliases: ["Olimp1","Halymmuhammet Annageldyyev","Kerimguly Bendov","Begench Bayrammyradov"], roomId: "2" },
+  { seat: "44", team: "Baku Higher Oil School — BHOS 2", aliases: ["BHOS 2","Huseyn Aghayev","Isa Maharramov","Vusal Huseynov"], roomId: "2" },
+  { seat: "45", team: "Russian-Armenian (Slavonick) State University — RAU 3", aliases: ["RAU 3","Yeremia Tamamyan","Hayk Petrosyan","Mikayel Ghazaryan"], roomId: "2" },
+  { seat: "46", team: "Free University of Tbilisi — Tbilisi FreeUni 2", aliases: ["Tbilisi FreeUni 2","Aleqsandre Dolaqidze","Tornike Beria","Vasili Dandurishvili"], roomId: "2" },
+  { seat: "47", team: "Yerevan State University — 6741426", aliases: ["6741426","Hakob Ayvazyan","Hamlet Petrosyan","Samvel Andreasyan"], roomId: "2" },
+  { seat: "48", team: "Baku Higher Oil School — BHOS 1", aliases: ["BHOS 1","Emin Orujov","Saleh Isayev","Jamil Jamaladdinli"], roomId: "2" },
+  { seat: "49", team: "Yerevan State University — Binary Trio", aliases: ["Binary Trio","Razmik Parzyan","Meri Badalyan","Syuzanna Grigoryan"], roomId: "2" },
+]
+
+    },
+    {
+      id: "contestB",
+      name: "Individual",
+      teams: [
+        { team: "Example Team", aliases: ["Ex", "Demo"], roomId: "room1", seat: "2" },
+      ]
+    }
+  ]
+};
+
+// ---------- APP ----------
+const elTabs = document.getElementById("tabs");
+const elQ = document.getElementById("q");
+const elList = document.getElementById("list");
+const elMatchCount = document.getElementById("matchCount");
+const elRoomSelect = document.getElementById("roomSelect");
+const elRoomName = document.getElementById("roomName");
+const elPlanWrap = document.getElementById("planWrap");
+const elSelectedInfo = document.getElementById("selectedInfo");
+
+let state = { contestId: CONFIG.contests[0]?.id ?? null, roomId: null, query: "", selectedSeat: null };
+
+function norm(s){ return (s ?? "").toString().trim().toLowerCase().replace(/\s+/g," "); }
+function escapeHtml(s){
+  return (s ?? "").toString()
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function getContest(){
+  return CONFIG.contests.find(c => c.id === state.contestId) ?? CONFIG.contests[0];
+}
+function getRoomById(roomId){
+  return CONFIG.rooms.find(r => r.id === roomId) ?? CONFIG.rooms[0];
+}
+function getCurrentRoom(){
+  return getRoomById(state.roomId ?? CONFIG.rooms[0]?.id);
+}
+
+function matchesTeam(t, qn){
+  if(!qn) return true;
+  const all = [t.team, ...(t.aliases ?? [])].map(norm);
+  return all.some(x=>x.includes(qn));
+}
+
+function renderTabs(){
+  elTabs.innerHTML = "";
+  for(const c of CONFIG.contests){
+    const b = document.createElement("button");
+    b.className = "tab-btn" + (c.id===state.contestId ? " active" : "");
+    b.textContent = c.name;
+    b.onclick = ()=>{
+      state.contestId = c.id;
+      state.roomId = null;
+      state.selectedSeat = null;
+      state.query = "";
+      elQ.value = "";
+      renderAll();
+    };
+    elTabs.appendChild(b);
+  }
+}
+
+function renderRoomSelect(){
+  elRoomSelect.innerHTML = "";
+  for(const r of CONFIG.rooms){
+    const o = document.createElement("option");
+    o.value = r.id;
+    o.textContent = r.name;
+    elRoomSelect.appendChild(o);
+  }
+
+  // keep current room if possible
+  const room = getCurrentRoom();
+  state.roomId = room.id;
+  elRoomSelect.value = room.id;
+  elRoomName.textContent = room.name;
+
+  elRoomSelect.onchange = () => {
+    state.roomId = elRoomSelect.value;
+    state.selectedSeat = null;
+    renderAll();
+  };
+}
+
+function renderList(contest){
+  const qn = norm(state.query);
+
+  const teams = contest.teams
+    .filter(t => matchesTeam(t, qn))
+    .sort((a,b)=>norm(a.team).localeCompare(norm(b.team)));
+
+  elMatchCount.textContent = teams.length;
+  elList.innerHTML = "";
+
+  if(teams.length === 0){
+    const div = document.createElement("div");
+    div.className = "item";
+    div.style.cursor = "default";
+    div.innerHTML = `<div class="top"><div class="team">No matches</div><div class="seat">—</div></div>
+      <div class="meta">Try another room or a different alias.</div>`;
+    elList.appendChild(div);
+    return;
+  }
+
+  for(const t of teams){
+    const r = getRoomById(t.roomId);
+
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="top">
+        <div class="team">${escapeHtml(t.team)}</div>
+        <div class="seat">Seat ${escapeHtml(t.seat)}</div>
+      </div>
+      <div class="meta">
+        Room: <b>${escapeHtml(r.name)}</b>
+        ${t.aliases?.length ? `<br/>Aliases: ${t.aliases.map(escapeHtml).join(", ")}` : ""}
+      </div>
+    `;
+
+    div.onclick = () => {
+      // AUTO SWITCH ROOM
+      state.roomId = t.roomId;
+      elRoomSelect.value = t.roomId;
+      elRoomName.textContent = r.name;
+
+      state.selectedSeat = { team: t.team, seat: t.seat };
+      elSelectedInfo.textContent = `${t.team} — ${r.name}, seat ${t.seat}`;
+      renderPlan(contest, r);
+    };
+
+    elList.appendChild(div);
+  }
+}
+
+function renderPlan(contest, room){
+  const seats = room.seats ?? {};
+  const selectedSeat = state.selectedSeat?.seat ?? null;
+
+  // Config you can tune per room if you want
+  const gridStep = room.gridStep ?? 10;     // grid every N units (0..100)
+  const seatR = room.seatR ?? 2.2;          // seat dot radius
+  const fontSize = room.fontSize ?? 3.2;    // SMALL numbers
+  const showNumbers = room.showNumbers ?? true; // you can set false if you want only dots
+
+  // SVG in 0..100 so your x/y percent coordinates match
+  let svg = `
+  <svg viewBox="0 0 100 100" role="img" aria-label="Room plan">
+    <defs>
+      <pattern id="grid" width="${gridStep}" height="${gridStep}" patternUnits="userSpaceOnUse">
+        <path d="M ${gridStep} 0 L 0 0 0 ${gridStep}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      </pattern>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="0.7" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <rect x="1" y="1" width="98" height="98" rx="6" ry="6"
+          fill="rgba(10,12,18,0.15)" stroke="rgba(255,255,255,0.10)" />
+    <rect x="1" y="1" width="98" height="98" rx="6" ry="6"
+          fill="url(#grid)" />
+
+    <text x="4" y="7" fill="rgba(169,176,195,0.95)" font-size="4" font-weight="800">
+      ${escapeHtml(room.name)}
+    </text>
+  `;
+
+  // Draw seats
+  for(const seatNum of Object.keys(seats).sort((a,b)=>Number(a)-Number(b))){
+    const p = seats[seatNum];
+    const isHL = selectedSeat && String(seatNum) === String(selectedSeat);
+
+    // highlight ring
+    if (isHL) {
+      svg += `
+        <circle
+          cx="${p.x}"
+          cy="${p.y}"
+          r="${seatR + 4.0}"
+          fill="none"
+          stroke="rgba(122,162,255,0.95)"
+          stroke-width="1.6"
+          stroke-dasharray="3 2"
+        />
+      `;
+    }
+
+
+    // seat dot
+    svg += `
+      <g class="seat-node ${isHL ? "seat-hl" : ""}" data-seat="${escapeHtml(seatNum)}">
+        <circle
+          cx="${p.x}"
+          cy="${p.y}"
+          r="${seatR}"
+          fill="rgba(20,28,48,0.95)"
+          stroke="rgba(255,255,255,0.25)"
+          stroke-width="1"
+        />
+        <text
+          x="${p.x}"
+          y="${p.y}"
+          fill="#ffffff"
+          font-weight="900"
+          font-size="${fontSize}"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          style="pointer-events:none; user-select:none;"
+        >
+          ${escapeHtml(seatNum)}
+        </text>
+      </g>
+    `;
+
+
+  }
+
+  svg += `</svg>`;
+  elPlanWrap.innerHTML = svg;
+
+  // Hover tooltip (HTML overlay)
+  // Ensure planWrap is position:relative (add in CSS if not already)
+  elPlanWrap.style.position = "relative";
+
+  // remove old tooltip if any
+  elPlanWrap.querySelectorAll(".seat-tip").forEach(n => n.remove());
+
+  const tip = document.createElement("div");
+  tip.className = "seat-tip";
+  tip.style.position = "absolute";
+  tip.style.padding = "6px 8px";
+  tip.style.borderRadius = "10px";
+  tip.style.border = "1px solid rgba(255,255,255,0.14)";
+  tip.style.background = "rgba(10,12,18,0.82)";
+  tip.style.boxShadow = "0 14px 30px rgba(0,0,0,0.45)";
+  tip.style.fontSize = "12px";
+  tip.style.fontWeight = "800";
+  tip.style.color = "rgba(231,234,242,0.95)";
+  tip.style.pointerEvents = "none";
+  tip.style.display = "none";
+  tip.style.transform = "translate(-50%, -120%)";
+  tip.style.zIndex = "10";
+  tip.textContent = "";
+  elPlanWrap.appendChild(tip);
+
+  // helper: percent -> px inside wrapper
+  function placeTip(px, py, text){
+    tip.style.left = px + "px";
+    tip.style.top = py + "px";
+    tip.textContent = text;
+    tip.style.display = "block";
+  }
+
+  const svgEl = elPlanWrap.querySelector("svg");
+  const nodes = elPlanWrap.querySelectorAll(".seat-node");
+
+  // click seat to select
+  svgEl.addEventListener("click", (e)=>{
+    const g = e.target.closest?.(".seat-node");
+    if(!g) return;
+    const seat = g.getAttribute("data-seat");
+    state.selectedSeat = { team: "(selected seat)", seat };
+    elSelectedInfo.textContent = `${room.name}, seat ${seat}`;
+    renderPlan(contest, room);
+  });
+
+  // hover tooltip
+  nodes.forEach(g => {
+    g.addEventListener("mousemove", (e) => {
+      const rect = elPlanWrap.getBoundingClientRect();
+      const seat = g.getAttribute("data-seat");
+      // use mouse position so tooltip feels natural
+      placeTip(e.clientX - rect.left, e.clientY - rect.top, `Seat ${seat}`);
+    });
+    g.addEventListener("mouseleave", () => {
+      tip.style.display = "none";
+    });
+  });
+}
+
+
+function renderAll(){
+  renderTabs();
+  const contest = getContest();
+
+  renderRoomSelect();
+
+  const room = getCurrentRoom();
+  elRoomName.textContent = room.name;
+
+  renderList(contest);
+  renderPlan(contest, room);
+
+  if(!state.selectedSeat) elSelectedInfo.textContent = "—";
+}
+
+elQ.addEventListener("input", ()=>{
+  state.query = elQ.value;
+  const contest = getContest();
+
+  // compute matches across all rooms
+  const qn = norm(state.query);
+  const matches = contest.teams.filter(t => matchesTeam(t, qn));
+
+  // if exactly one match -> auto switch + highlight
+  if (qn && matches.length === 1) {
+    const t = matches[0];
+    const r = getRoomById(t.roomId);
+
+    state.roomId = t.roomId;
+    state.selectedSeat = { team: t.team, seat: t.seat };
+
+    elRoomSelect.value = t.roomId;
+    elRoomName.textContent = r.name;
+    elSelectedInfo.textContent = `${t.team} — ${r.name}, seat ${t.seat}`;
+
+    renderList(contest);
+    renderPlan(contest, r);
+    return;
+  }
+
+  renderList(contest);
+});
+
+
+renderAll();
+</script>
 </body>
 </html>

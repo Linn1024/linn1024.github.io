@@ -52,6 +52,7 @@ class Actor {
     this.tile = tile;
     this.motionTile = tile;
     this.direction = 0;
+    this.facing = 0;
     this.offsetX = 0;
     this.offsetY = 0;
     this.targetTile = null;
@@ -813,6 +814,7 @@ class Game {
 
   completeEnemySegment(enemy, tile) {
     enemy.tile = tile;
+    enemy.facing = enemy.direction;
     enemy.motionTile = tile;
     enemy.targetTile = null;
     enemy.offsetX = 0;
@@ -1009,11 +1011,12 @@ class Game {
         const [ex, ey] = this.tileXY(base);
         const drawX = ex + enemy.offsetX;
         const drawY = ey + enemy.offsetY;
-        if (enemy.kind === XOT) this.blitActorFrame(this.assets.xstrip, enemy.direction, drawX, drawY - 3);
-        else if (enemy.kind === YEL) this.blitActorFrame(this.assets.ystrip, enemy.direction, drawX, drawY - 3);
+        const facing = (enemy.offsetX !== 0 || enemy.offsetY !== 0 || enemy.moveMode) ? enemy.direction : enemy.facing;
+        if (enemy.kind === XOT) this.blitActorFrame(this.assets.xstrip, facing, drawX, drawY - 3);
+        else if (enemy.kind === YEL) this.blitActorFrame(this.assets.ystrip, facing, drawX, drawY - 3);
         else {
           const strip = enemy.moveMode === "diagonal" ? this.assets.diag : this.assets.pstrip;
-          this.blitActorFrame(strip, enemy.direction, drawX, enemy.moveMode === "diagonal" ? drawY : drawY - 3);
+          this.blitActorFrame(strip, facing, drawX, enemy.moveMode === "diagonal" ? drawY : drawY - 3);
         }
       }
     } else {

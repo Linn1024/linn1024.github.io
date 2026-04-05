@@ -926,8 +926,8 @@ class Game {
       this.ctx.font = "10px Trebuchet MS";
       const bestLevel = `Best level: ${this.lastProgressLevel + 1}`;
       const bestScore = `Best score: ${this.bestScore}`;
-      this.ctx.fillText(bestLevel, 120 - this.ctx.measureText(bestLevel).width / 2, 248);
-      this.ctx.fillText(bestScore, 120 - this.ctx.measureText(bestScore).width / 2, 260);
+      this.ctx.fillText(bestLevel, 120 - this.ctx.measureText(bestLevel).width / 2, 278);
+      this.ctx.fillText(bestScore, 120 - this.ctx.measureText(bestScore).width / 2, 290);
     }
 
   drawHelp() {

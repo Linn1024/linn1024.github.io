@@ -1079,15 +1079,15 @@ class Game {
     this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
-    this.ctx.fillText("High Score", 58, 66);
+    this.ctx.fillText("High Score", 62, 82);
     this.ctx.font = "15px Trebuchet MS";
     [
       `Player: ${this.playerName}`,
       `Best score: ${this.bestScore}`,
       `Best level: ${this.lastProgressLevel + 1}`
-    ].forEach((line, i) => this.ctx.fillText(line, 30, 118 + i * 30));
+    ].forEach((line, i) => this.ctx.fillText(line, 34, 132 + i * 30));
     this.ctx.font = "13px Trebuchet MS";
-    this.ctx.fillText("Tap or Esc: back", 56, 236);
+    this.ctx.fillText("Tap or Esc: back", 60, 244);
   }
 
   drawSettings() {
@@ -1095,17 +1095,17 @@ class Game {
     this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
-    this.ctx.fillText("Settings", 70, 66);
+    this.ctx.fillText("Settings", 70, 82);
     const values = [this.soundEnabled ? "On" : "Off", this.vibrationEnabled ? "On" : "Off", this.lightEnabled ? "On" : "Off", ""];
     this.ctx.font = "bold 16px Trebuchet MS";
     SETTINGS_ITEMS.forEach((item, i) => {
-      const y = 106 + i * 30;
+      const y = 120 + i * 28;
       this.ctx.fillText(item, 56, y + 16);
       if (values[i]) this.ctx.fillText(values[i], 160, y + 16);
       if (i === this.settingsIndex) this.ctx.drawImage(this.assets.arrow, 28, y + 2);
     });
     this.ctx.font = "13px Trebuchet MS";
-    this.ctx.fillText("Tap or Left/Right: toggle", 26, 246);
+    this.ctx.fillText("Tap or Left/Right: toggle", 26, 250);
   }
 
   drawLevelResult() {

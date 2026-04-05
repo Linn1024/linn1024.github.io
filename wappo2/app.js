@@ -387,11 +387,48 @@ class Game {
     }
   }
 
-  handleControl(action) {
-    if (this.scene === "tutorial") return;
-    const dir = { up: 1, down: 6, left: 2, right: 5 }[action];
-    if (this.scene === "game" && !this.inputLocked && dir) this.tryPlayerMove(dir);
-  }
+    handleControl(action) {
+      if (this.scene === "title") {
+        this.scene = "main_menu";
+        this.menuIndex = 0;
+        return;
+      }
+      if (this.scene === "tutorial") {
+        if (action === "left") {
+          this.tutorialDone = true;
+          this.scene = "game";
+          this.saveState();
+        } else if ((action === "up" || action === "right") && this.tutorialStep < TUTORIAL_MOVES.length) {
+          this.scene = "game";
+          this.tryPlayerMove(TUTORIAL_MOVES[this.tutorialStep]);
+        }
+        return;
+      }
+      if (["main_menu", "pause", "game_over", "milestone"].includes(this.scene)) {
+        const items = this.currentMenuItems();
+        if (action === "up") this.menuIndex = (this.menuIndex + items.length - 1) % items.length;
+        else if (action === "down") this.menuIndex = (this.menuIndex + 1) % items.length;
+        else if (action === "left" || action === "right") this.activateMenuItem();
+        return;
+      }
+      if (this.scene === "settings") {
+        if (action === "up") this.settingsIndex = (this.settingsIndex + SETTINGS_ITEMS.length - 1) % SETTINGS_ITEMS.length;
+        else if (action === "down") this.settingsIndex = (this.settingsIndex + 1) % SETTINGS_ITEMS.length;
+        else if (action === "left" || action === "right") this.toggleSetting();
+        return;
+      }
+      if (["help", "about", "high_score"].includes(this.scene)) {
+        this.scene = "main_menu";
+        this.menuIndex = 0;
+        return;
+      }
+      if (this.scene === "level_result") {
+        this.advanceAfterResult();
+        return;
+      }
+      const dir = { up: 1, down: 6, left: 2, right: 5 }[action];
+      if (this.scene === "game" && !this.inputLocked && dir) this.tryPlayerMove(dir);
+    }
 
   playerTarget(direction, origin = null) {
     const tile = origin ?? this.playerTile;

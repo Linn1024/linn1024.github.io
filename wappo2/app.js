@@ -889,8 +889,8 @@ class Game {
     this.ctx.drawImage(image, frame * frameW, 0, frameW, frameH, x, y, frameW, frameH);
   }
 
-  blitActorFrame(image, facing, x, y, frameW = 40, frameH = 52) {
-    this.ctx.drawImage(image, facing * frameW, 0, frameW, frameH, x, y, frameW, frameH);
+  blitActorFrame(image, facing, animFrame, x, y, frameW = 40, frameH = 52) {
+    this.ctx.drawImage(image, animFrame * frameW, facing * frameH, frameW, frameH, x, y, frameW, frameH);
   }
 
   drawImageCentered(image, topY = null) {
@@ -1005,18 +1005,20 @@ class Game {
     }
     if (this.turnPhase !== "death_anim") {
       const [px, py] = this.tileXY(this.playerTile);
-      this.blitActorFrame(this.assets.wstrip, this.playerFacing(), px + this.playerOffsetX, py - 3 + this.playerOffsetY);
+      const playerAnim = (this.playerOffsetX !== 0 || this.playerOffsetY !== 0) ? this.objectFrame() : 0;
+      this.blitActorFrame(this.assets.wstrip, this.playerFacing(), playerAnim, px + this.playerOffsetX, py - 3 + this.playerOffsetY);
       for (const enemy of this.enemies) {
         const base = enemy.motionTile ?? enemy.tile;
         const [ex, ey] = this.tileXY(base);
         const drawX = ex + enemy.offsetX;
         const drawY = ey + enemy.offsetY;
         const facing = (enemy.offsetX !== 0 || enemy.offsetY !== 0 || enemy.moveMode) ? enemy.direction : enemy.facing;
-        if (enemy.kind === XOT) this.blitActorFrame(this.assets.xstrip, facing, drawX, drawY - 3);
-        else if (enemy.kind === YEL) this.blitActorFrame(this.assets.ystrip, facing, drawX, drawY - 3);
+        const enemyAnim = (enemy.offsetX !== 0 || enemy.offsetY !== 0 || enemy.moveMode) ? this.objectFrame() : 0;
+        if (enemy.kind === XOT) this.blitActorFrame(this.assets.xstrip, facing, enemyAnim, drawX, drawY - 3);
+        else if (enemy.kind === YEL) this.blitActorFrame(this.assets.ystrip, facing, enemyAnim, drawX, drawY - 3);
         else {
           const strip = enemy.moveMode === "diagonal" ? this.assets.diag : this.assets.pstrip;
-          this.blitActorFrame(strip, facing, drawX, enemy.moveMode === "diagonal" ? drawY : drawY - 3);
+          this.blitActorFrame(strip, facing, enemyAnim, drawX, enemy.moveMode === "diagonal" ? drawY : drawY - 3);
         }
       }
     } else {

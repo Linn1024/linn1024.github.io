@@ -808,19 +808,22 @@ class Game {
   }
 
   drawMenuList(items, startY) {
-    const compactMainMenu = this.scene === "main_menu";
-    const rowStep = compactMainMenu ? 24 : 28;
-    const font = compactMainMenu ? "bold 16px Trebuchet MS" : "bold 18px Trebuchet MS";
-    this.ctx.font = font;
-    items.forEach((item, index) => {
-      const y = startY + index * rowStep;
-      const icon = this.menuIcon(this.scene, index);
-      if (icon) this.ctx.drawImage(icon, 42, y - 2);
-      this.ctx.fillStyle = this.scene === "main_menu" && index === 1 && !this.startedGame ? "#6f6756" : "#000";
-      this.ctx.fillText(item, 70, y + (compactMainMenu ? 16 : 18));
-      if (index === this.menuIndex) this.ctx.drawImage(this.assets.arrow, 22, y + 4);
-    });
-  }
+      const compactMainMenu = this.scene === "main_menu";
+      const rowStep = compactMainMenu ? 22 : 28;
+      const font = compactMainMenu ? "bold 14px Trebuchet MS" : "bold 18px Trebuchet MS";
+      this.ctx.font = font;
+      items.forEach((item, index) => {
+        const y = startY + index * rowStep;
+        const icon = this.menuIcon(this.scene, index);
+        const iconX = compactMainMenu ? 38 : 42;
+        const textX = compactMainMenu ? 66 : 70;
+        const arrowX = compactMainMenu ? 20 : 22;
+        if (icon) this.ctx.drawImage(icon, iconX, y - 2);
+        this.ctx.fillStyle = this.scene === "main_menu" && index === 1 && !this.startedGame ? "#6f6756" : "#000";
+        this.ctx.fillText(item, textX, y + (compactMainMenu ? 15 : 18));
+        if (index === this.menuIndex) this.ctx.drawImage(this.assets.arrow, arrowX, y + 3);
+      });
+    }
 
   drawOverlayMenu(title, items) {
     this.ctx.fillStyle = "rgba(255,255,255,0.86)";
@@ -910,20 +913,22 @@ class Game {
   }
 
   drawMainMenu() {
-    this.ctx.drawImage(this.assets.bggame, 0, 0);
-    this.ctx.drawImage(this.assets.wood, 8, 35);
-    this.ctx.drawImage(this.assets.icon, 24, 50);
-    this.ctx.fillStyle = "rgb(103,26,0)";
-    this.ctx.font = "bold 22px Georgia";
-    this.ctx.fillText("WAPPO", 56, 66);
-    this.ctx.font = "11px Trebuchet MS";
-    this.ctx.fillText("Nostalgic mobile labyrinth", 58, 82);
-    this.drawMenuList(MAIN_MENU_ITEMS, 100);
-    this.ctx.fillStyle = "#000";
-    this.ctx.font = "11px Trebuchet MS";
-    this.ctx.fillText(`Best level: ${this.lastProgressLevel + 1}`, 18, 268);
-    this.ctx.fillText(`Best score: ${this.bestScore}`, 18, 281);
-  }
+      this.ctx.drawImage(this.assets.bggame, 0, 0);
+      this.ctx.drawImage(this.assets.wood, 8, 35);
+      this.ctx.drawImage(this.assets.icon, 20, 48);
+      this.ctx.fillStyle = "rgb(103,26,0)";
+      this.ctx.font = "bold 18px Georgia";
+      this.ctx.fillText("WAPPO", 52, 62);
+      this.ctx.font = "10px Trebuchet MS";
+      this.ctx.fillText("Nostalgic mobile labyrinth", 54, 76);
+      this.drawMenuList(MAIN_MENU_ITEMS, 88);
+      this.ctx.fillStyle = "#000";
+      this.ctx.font = "10px Trebuchet MS";
+      const bestLevel = `Best level: ${this.lastProgressLevel + 1}`;
+      const bestScore = `Best score: ${this.bestScore}`;
+      this.ctx.fillText(bestLevel, 120 - this.ctx.measureText(bestLevel).width / 2, 292);
+      this.ctx.fillText(bestScore, 120 - this.ctx.measureText(bestScore).width / 2, 305);
+    }
 
   drawHelp() {
     this.ctx.drawImage(this.assets.bggame, 0, 0);

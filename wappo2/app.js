@@ -568,8 +568,17 @@ class Game {
 
   planEnemyTurn() {
     if (!this.enemies.length) {
-      this.turnPhase = "idle";
-      this.inputLocked = false;
+      this.setStatus(this.levelStatus());
+      this.resolvePlayerSpecials();
+      if (this.turnPhase !== "death_anim") {
+        this.turnPhase = "idle";
+        this.inputLocked = false;
+        this.playerTeleportedThisTurn = false;
+        this.playerTargetTile = null;
+        this.playerAnimSteps = 0;
+        this.playerOffsetX = 0;
+        this.playerOffsetY = 0;
+      }
       return;
     }
     for (const enemy of this.enemies) {

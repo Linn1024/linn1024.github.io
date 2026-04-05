@@ -173,7 +173,79 @@ class Game {
     this.loadLevel(this.levelIndex, false);
     this.scene = "splash_siemens";
     window.addEventListener("keydown", (event) => this.onKey(event));
+    this.canvas.addEventListener("click", (event) => this.onCanvasClick(event));
     requestAnimationFrame(this.boundLoop);
+  }
+
+  canvasPoint(event) {
+    const rect = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
+    return {
+      x: (event.clientX - rect.left) * scaleX,
+      y: (event.clientY - rect.top) * scaleY
+    };
+  }
+
+  clickMenuList(items, startY, rowStep, x, y) {
+    if (x < 16 || x > 216) return false;
+    for (let index = 0; index < items.length; index += 1) {
+      const rowY = startY + index * rowStep;
+      if (y >= rowY && y <= rowY + rowStep) {
+        this.menuIndex = index;
+        this.activateMenuItem();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  onCanvasClick(event) {
+    const { x, y } = this.canvasPoint(event);
+    if (this.scene === "splash_siemens" || this.scene === "splash_softex") {
+      this.scene = "title";
+      return;
+    }
+    if (this.scene === "title") {
+      this.scene = "main_menu";
+      this.menuIndex = 0;
+      return;
+    }
+    if (this.scene === "tutorial") {
+      if (this.tutorialStep < TUTORIAL_MOVES.length) {
+        this.scene = "game";
+        this.tryPlayerMove(TUTORIAL_MOVES[this.tutorialStep]);
+      }
+      return;
+    }
+    if (this.scene === "main_menu") {
+      this.clickMenuList(MAIN_MENU_ITEMS, 84, 20, x, y);
+      return;
+    }
+    if (["pause", "game_over", "milestone"].includes(this.scene)) {
+      this.clickMenuList(this.currentMenuItems(), 128, 28, x, y);
+      return;
+    }
+    if (this.scene === "settings") {
+      if (x < 18 || x > 222) return;
+      for (let index = 0; index < SETTINGS_ITEMS.length; index += 1) {
+        const rowY = 96 + index * 36;
+        if (y >= rowY && y <= rowY + 28) {
+          this.settingsIndex = index;
+          this.toggleSetting();
+          return;
+        }
+      }
+      return;
+    }
+    if (["help", "about", "high_score"].includes(this.scene)) {
+      this.scene = "main_menu";
+      this.menuIndex = 0;
+      return;
+    }
+    if (this.scene === "level_result") {
+      this.advanceAfterResult();
+    }
   }
 
   setStatus(text) {

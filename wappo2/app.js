@@ -1277,7 +1277,7 @@ class Game {
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
     const title = this.t("levelComplete");
-    this.ctx.fillText(title, 20, 38);
+    this.ctx.fillText(title, 30, 38);
     this.ctx.font = "14px Trebuchet MS";
     [
       `${this.t("levelLabel")}: ${this.completedLevelNumber ?? this.levelIndex + 1}`,
@@ -1285,7 +1285,7 @@ class Game {
       `${this.t("bestScore")}: ${this.bestScore}`,
       "",
       this.t("continueHint")
-    ].forEach((line, i) => this.ctx.fillText(line, 20, 96 + i * 28));
+    ].forEach((line, i) => this.ctx.fillText(line, 30, 96 + i * 28));
     this.ctx.drawImage(this.assets.arrow, 220, 300);
     this.ctx.drawImage(this.assets.CCicon, 120, 298);
   }

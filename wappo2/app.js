@@ -402,6 +402,7 @@ class Game {
   }
 
   activateMenuItem() {
+    console.debug("wappo2 activateMenuItem", { scene: this.scene, menuIndex: this.menuIndex, settingsIndex: this.settingsIndex });
     if (this.scene === "main_menu") {
       if (this.menuIndex === 0) {
         this.score = 0;
@@ -1205,16 +1206,34 @@ class Game {
 }
 
 const game = new Game(document.getElementById("gameCanvas"), document.getElementById("status"));
-document.getElementById("restartBtn").addEventListener("click", () => {
+function bindPress(element, handler) {
+  const wrapped = (event) => {
+    event.preventDefault?.();
+    handler(event);
+  };
+  element.addEventListener("click", wrapped);
+  element.addEventListener("pointerdown", wrapped);
+  element.addEventListener("touchstart", wrapped, { passive: false });
+}
+
+bindPress(document.getElementById("restartBtn"), () => {
   game.loadLevel(game.levelIndex, false);
   game.scene = "game";
 });
-document.getElementById("menuBtn").addEventListener("click", () => {
-  game.scene = "main_menu";
-  game.menuIndex = 0;
+
+bindPress(document.getElementById("menuBtn"), () => {
+  console.debug("wappo2 menuBtn", { scene: game.scene, turnPhase: game.turnPhase });
+  if (game.scene === "game") {
+    game.scene = "pause";
+    game.menuIndex = 0;
+  } else {
+    game.scene = "main_menu";
+    game.menuIndex = 0;
+  }
 });
+
 for (const button of document.querySelectorAll("[data-action]")) {
-  button.addEventListener("click", () => game.handleControl(button.dataset.action));
+  bindPress(button, () => game.handleControl(button.dataset.action));
 }
 game.init().catch((error) => {
   document.getElementById("status").textContent = "Failed to load game";

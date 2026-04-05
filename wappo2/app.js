@@ -175,6 +175,8 @@ class Game {
     window.addEventListener("keydown", (event) => this.onKey(event));
     this.canvas.addEventListener("click", (event) => this.onCanvasClick(event));
     this.canvas.addEventListener("pointerdown", (event) => this.onCanvasClick(event));
+    this.canvas.addEventListener("mousedown", (event) => this.onCanvasClick(event));
+    this.canvas.addEventListener("touchstart", (event) => this.onCanvasClick(event), { passive: false });
     requestAnimationFrame(this.boundLoop);
   }
 
@@ -182,9 +184,10 @@ class Game {
     const rect = this.canvas.getBoundingClientRect();
     const scaleX = this.canvas.width / rect.width;
     const scaleY = this.canvas.height / rect.height;
+    const point = event.touches?.[0] ?? event.changedTouches?.[0] ?? event;
     return {
-      x: (event.clientX - rect.left) * scaleX,
-      y: (event.clientY - rect.top) * scaleY
+      x: (point.clientX - rect.left) * scaleX,
+      y: (point.clientY - rect.top) * scaleY
     };
   }
 
@@ -202,7 +205,9 @@ class Game {
   }
 
   onCanvasClick(event) {
+    event.preventDefault?.();
     const { x, y } = this.canvasPoint(event);
+    console.debug("wappo2 canvas input", { scene: this.scene, x, y, menuIndex: this.menuIndex });
     if (this.scene === "splash_siemens" || this.scene === "splash_softex") {
       this.scene = "title";
       return;

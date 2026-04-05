@@ -477,7 +477,6 @@ class Game {
       if (!active) {
         this.turnPhase = "idle";
         this.inputLocked = false;
-        this.playerTeleportedThisTurn = false;
         for (const enemy of this.enemies) {
           enemy.motionTile = enemy.tile;
           enemy.offsetX = 0;
@@ -485,6 +484,7 @@ class Game {
           enemy.moveMode = "";
         }
         this.resolvePlayerSpecials();
+        this.playerTeleportedThisTurn = false;
         if (this.scene === "game" && this.levelIndex === 0 && !this.tutorialDone) {
           this.tutorialStep += 1;
           if (this.tutorialStep >= TUTORIAL_TEXTS.length) {

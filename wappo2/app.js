@@ -184,6 +184,17 @@ class Game {
     return `Level ${this.levelIndex + 1}`;
   }
 
+  tutorialScriptMode() {
+    return this.levelIndex === 0 && !this.tutorialDone;
+  }
+
+  completeTutorialLevel() {
+    this.tutorialDone = true;
+    this.playerTile = this.exitTile;
+    this.resolvePlayerSpecials();
+    this.saveState();
+  }
+
   loadLevel(index, resetScore = false) {
     if (resetScore) this.score = 0;
     this.levelIndex = Math.max(0, Math.min(index, this.levels.length - 1));
@@ -453,10 +464,12 @@ class Game {
         if (enemy.offsetX === 0 && enemy.offsetY === 0) {
           this.resolveEnemySpecials(enemy);
           if (enemy.tile === this.playerTile) {
-            this.turnPhase = "death_anim";
-            this.deathFrame = 0;
-            this.deathTimer = 9;
-            return;
+            if (!this.tutorialScriptMode()) {
+              this.turnPhase = "death_anim";
+              this.deathFrame = 0;
+              this.deathTimer = 9;
+              return;
+            }
           }
         }
         if (moved && (enemy.offsetX !== 0 || enemy.offsetY !== 0 || enemy.totalSteps > 0)) active = true;
@@ -475,8 +488,7 @@ class Game {
         if (this.scene === "game" && this.levelIndex === 0 && !this.tutorialDone) {
           this.tutorialStep += 1;
           if (this.tutorialStep >= TUTORIAL_TEXTS.length) {
-            this.tutorialDone = true;
-            this.saveState();
+            this.completeTutorialLevel();
           } else {
             this.scene = "tutorial";
           }
@@ -500,6 +512,14 @@ class Game {
   }
 
   resolvePlayerSpecials() {
+    if (this.enemyAt(this.playerTile)) {
+      if (!this.tutorialScriptMode()) {
+        this.turnPhase = "death_anim";
+        this.deathFrame = 0;
+        this.deathTimer = 9;
+      }
+      return;
+    }
     if (!this.playerTeleportedThisTurn && this.playerTile === this.teleports[0]) {
       this.playerTile = this.teleports[1];
       this.playerTeleportedThisTurn = true;

@@ -21,7 +21,7 @@ const POLICE = 105;
 
 const STORAGE_PREFIX = "wappo2-web";
 
-const MAIN_MENU_ITEMS = ["New Game", "High Score", "Settings", "Help", "About", "Quit"];
+const MAIN_MENU_ITEMS = ["New Game", "Continue", "High Score", "Settings", "Help", "About", "Quit"];
 const PAUSE_ITEMS = ["Resume", "Restart", "Settings", "Menu"];
 const GAME_OVER_ITEMS = ["Restart", "Settings", "Menu"];
 const SETTINGS_ITEMS = ["Sound", "Vibration", "Light", "Back"];
@@ -334,16 +334,20 @@ class Game {
         this.loadLevel(0, false);
         this.scene = "tutorial";
       } else if (this.menuIndex === 1) {
-        this.scene = "high_score";
+        if (!this.startedGame) return;
+        this.loadLevel(this.levelIndex, false);
+        this.scene = this.levelIndex === 0 && !this.tutorialDone ? "tutorial" : "game";
       } else if (this.menuIndex === 2) {
+        this.scene = "high_score";
+      } else if (this.menuIndex === 3) {
         this.settingsReturnScene = "main_menu";
         this.settingsIndex = 0;
         this.scene = "settings";
-      } else if (this.menuIndex === 3) {
-        this.scene = "help";
       } else if (this.menuIndex === 4) {
-        this.scene = "about";
+        this.scene = "help";
       } else if (this.menuIndex === 5) {
+        this.scene = "about";
+      } else if (this.menuIndex === 6) {
         this.scene = "title";
       }
       return;
@@ -777,6 +781,7 @@ class Game {
     if (scene === "main_menu") {
       return [
         this.assets.gameicon,
+        this.assets.continueicon,
         this.assets.highscore,
         this.assets.settingsicon,
         this.assets.helpicon,
@@ -804,11 +809,11 @@ class Game {
 
   drawMenuList(items, startY) {
     this.ctx.font = "bold 18px Trebuchet MS";
-    this.ctx.fillStyle = "#000";
     items.forEach((item, index) => {
       const y = startY + index * 28;
       const icon = this.menuIcon(this.scene, index);
       if (icon) this.ctx.drawImage(icon, 42, y - 2);
+      this.ctx.fillStyle = this.scene === "main_menu" && index === 1 && !this.startedGame ? "#6f6756" : "#000";
       this.ctx.fillText(item, 70, y + 18);
       if (index === this.menuIndex) this.ctx.drawImage(this.assets.arrow, 22, y + 4);
     });

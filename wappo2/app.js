@@ -980,6 +980,28 @@ class Game {
     lines.forEach((line, index) => this.ctx.fillText(line, x, y + index * lineHeight));
   }
 
+  drawInfoPanel(title, bodyLines, footer = "") {
+    this.drawBoard();
+    this.ctx.fillStyle = "rgba(255,255,255,0.9)";
+    this.ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    this.ctx.fillStyle = "#fff7dc";
+    this.ctx.fillRect(22, 56, 196, 196);
+    this.ctx.strokeStyle = "#8b5a12";
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(22, 56, 196, 196);
+    this.ctx.fillStyle = "#000";
+    this.ctx.font = "bold 18px Trebuchet MS";
+    this.ctx.fillText(title, 120 - this.ctx.measureText(title).width / 2, 84);
+    this.ctx.font = "15px Trebuchet MS";
+    bodyLines.forEach((line, index) => {
+      this.ctx.fillText(line, 40, 122 + index * 30);
+    });
+    if (footer) {
+      this.ctx.font = "14px Trebuchet MS";
+      this.ctx.fillText(footer, 120 - this.ctx.measureText(footer).width / 2, 228);
+    }
+  }
+
   drawBoard() {
     this.ctx.drawImage(this.assets.bggame, 0, 0);
     for (let tile = 0; tile < 36; tile += 1) {
@@ -1075,37 +1097,36 @@ class Game {
   }
 
   drawHighScore() {
-    this.ctx.drawImage(this.assets.bggame, 0, 0);
-    this.ctx.drawImage(this.assets.wood, 8, 35);
-    this.ctx.fillStyle = "#000";
-    this.ctx.font = "bold 20px Trebuchet MS";
-    this.ctx.fillText("High Score", 20, 38);
-    this.ctx.font = "14px Trebuchet MS";
-    [
+    this.drawInfoPanel("High Score", [
       `Player: ${this.playerName}`,
       `Best score: ${this.bestScore}`,
-      `Best level: ${this.lastProgressLevel + 1}`,
-      "",
-      "Esc: back"
-    ].forEach((line, i) => this.ctx.fillText(line, 20, 96 + i * 28));
+      `Best level: ${this.lastProgressLevel + 1}`
+    ], "Tap or Esc: back");
   }
 
   drawSettings() {
-    this.ctx.drawImage(this.assets.bggame, 0, 0);
-    this.ctx.drawImage(this.assets.wood, 8, 35);
+    this.drawBoard();
+    this.ctx.fillStyle = "rgba(255,255,255,0.9)";
+    this.ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    this.ctx.fillStyle = "#fff7dc";
+    this.ctx.fillRect(22, 56, 196, 196);
+    this.ctx.strokeStyle = "#8b5a12";
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(22, 56, 196, 196);
     this.ctx.fillStyle = "#000";
-    this.ctx.font = "bold 20px Trebuchet MS";
-    this.ctx.fillText("Settings", 20, 38);
-    const values = [this.soundEnabled ? "On" : "Off", this.vibrationEnabled ? "On" : "Off", this.lightEnabled ? "On" : "Off", ""];
     this.ctx.font = "bold 18px Trebuchet MS";
+    this.ctx.fillText("Settings", 120 - this.ctx.measureText("Settings").width / 2, 84);
+    const values = [this.soundEnabled ? "On" : "Off", this.vibrationEnabled ? "On" : "Off", this.lightEnabled ? "On" : "Off", ""];
+    this.ctx.font = "bold 16px Trebuchet MS";
     SETTINGS_ITEMS.forEach((item, i) => {
-      const y = 96 + i * 36;
-      this.ctx.fillText(item, 44, y + 18);
-      if (values[i]) this.ctx.fillText(values[i], 162, y + 18);
-      if (i === this.settingsIndex) this.ctx.drawImage(this.assets.arrow, 18, y + 4);
+      const y = 112 + i * 28;
+      this.ctx.fillText(item, 58, y + 16);
+      if (values[i]) this.ctx.fillText(values[i], 156, y + 16);
+      if (i === this.settingsIndex) this.ctx.drawImage(this.assets.arrow, 34, y + 2);
     });
-    this.ctx.font = "12px Trebuchet MS";
-    this.ctx.fillText("Enter/Left/Right: toggle   Esc: back", 14, 304);
+    this.ctx.font = "13px Trebuchet MS";
+    const footer = "Tap or Left/Right: toggle";
+    this.ctx.fillText(footer, 120 - this.ctx.measureText(footer).width / 2, 228);
   }
 
   drawLevelResult() {

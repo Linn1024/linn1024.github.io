@@ -21,21 +21,123 @@ const POLICE = 105;
 
 const STORAGE_PREFIX = "wappo2-web";
 
-const MAIN_MENU_ITEMS = ["New Game", "Continue", "High Score", "Settings", "Help", "About", "Quit"];
-const PAUSE_ITEMS = ["Resume", "Restart", "Settings", "Menu"];
-const GAME_OVER_ITEMS = ["Restart", "Settings", "Menu"];
-const SETTINGS_ITEMS = ["Sound", "Vibration", "Light", "Back"];
-const MILESTONE_ITEMS = ["Continue"];
+const STRINGS = {
+  ru: {
+    appTitle: "Wappo2 Web",
+    loading: "Загрузка...",
+    restart: "Заново",
+    menu: "Меню",
+    browserPort: "Браузерная версия",
+    browserDesc1: "Эта версия использует оригинальные извлеченные фоны, меню, спрайты, стены, телепорты, пламя и титульные экраны.",
+    browserDesc2: "Управление: стрелки двигают, Enter подтверждает меню и подсказки, Esc ставит игру на паузу или возвращает назад.",
+    browserDesc3: "Страница полностью статическая и совместима с GitHub Pages. Прогресс сохраняется в браузере.",
+    mainMenu: ["Новая игра", "Продолжить", "Рекорды", "Настройки", "Помощь", "Об игре", "Выход"],
+    pauseMenu: ["Продолжить", "Заново", "Настройки", "Меню"],
+    gameOverMenu: ["Заново", "Настройки", "Меню"],
+    settingsItems: ["Звук", "Вибрация", "Свет", "Язык", "Назад"],
+    milestoneItems: ["Продолжить"],
+    helpTitle: "Помощь",
+    helpLines: [
+      "Дойдите до выхода.",
+      "Стрелки двигают Ваппо на одну клетку.",
+      "Толкайте огненные блоки в пустые клетки.",
+      "Телепорты переносят на связанную площадку.",
+      "Красные и синие монстры ходят по-разному.",
+      "Слитые монстры превращаются в полицию.",
+      "Esc открывает паузу."
+    ],
+    backHint: "Нажмите или Esc: назад",
+    highScore: "Рекорды",
+    player: "Игрок",
+    bestScore: "Лучший счет",
+    bestLevel: "Лучший уровень",
+    settings: "Настройки",
+    toggleHint: "Нажмите или Влево/Вправо: сменить",
+    on: "Вкл",
+    off: "Выкл",
+    language: "Язык",
+    langRu: "Русский",
+    langEn: "English",
+    levelComplete: "Уровень пройден",
+    levelLabel: "Уровень",
+    score: "Счет",
+    continueHint: "Enter: продолжить",
+    congratulations: "Поздравляем",
+    reward50: "Награда за 50 уровень открыта.",
+    reward100: "Награда за 100 уровень открыта.",
+    continueText: "Продолжить",
+    paused: "Пауза",
+    caught: "Пойман",
+    aboutBack: "Нажмите или Esc: назад",
+    tutorialTexts: [
+      "Ваппо идет вверх. Желтый монстр движется вниз по той же линии к нему.",
+      "Ваппо идет вниз. Монстр приближается двумя шагами.",
+      "Ваппо идет влево и телепортируется. Монстр продолжает идти вверх.",
+      "Ваппо подходит к пламени. Монстр продолжает преследование.",
+      "Ваппо идет влево. Стены все еще блокируют путь монстра.",
+      "Ваппо делает шаг к выходу. Монстр падает в телепорт.",
+      "Ваппо достигает выхода и завершает уровень."
+    ]
+  },
+  en: {
+    appTitle: "Wappo2 Web",
+    loading: "Loading...",
+    restart: "Restart",
+    menu: "Menu",
+    browserPort: "Browser Port",
+    browserDesc1: "This version uses the original extracted backgrounds, menus, sprites, walls, teleports, flames, and title screens.",
+    browserDesc2: "Controls: arrow keys move, Enter confirms menus and tutorial prompts, Esc pauses or goes back.",
+    browserDesc3: "The page is static and GitHub Pages compatible. Progress is saved in browser storage.",
+    mainMenu: ["New Game", "Continue", "High Score", "Settings", "Help", "About", "Quit"],
+    pauseMenu: ["Resume", "Restart", "Settings", "Menu"],
+    gameOverMenu: ["Restart", "Settings", "Menu"],
+    settingsItems: ["Sound", "Vibration", "Light", "Language", "Back"],
+    milestoneItems: ["Continue"],
+    helpTitle: "Help",
+    helpLines: [
+      "Reach the exit.",
+      "Arrow keys move Wappo one tile.",
+      "Push flame blocks into open cells.",
+      "Teleports jump to the linked pad.",
+      "Red and blue monsters chase differently.",
+      "Merged monsters become police.",
+      "Esc opens the pause menu."
+    ],
+    backHint: "Tap or Esc: back",
+    highScore: "High Score",
+    player: "Player",
+    bestScore: "Best score",
+    bestLevel: "Best level",
+    settings: "Settings",
+    toggleHint: "Tap or Left/Right: toggle",
+    on: "On",
+    off: "Off",
+    language: "Language",
+    langRu: "Russian",
+    langEn: "English",
+    levelComplete: "Level Complete",
+    levelLabel: "Level",
+    score: "Score",
+    continueHint: "Enter: continue",
+    congratulations: "Congratulations",
+    reward50: "Level 50 reward unlocked.",
+    reward100: "Level 100 reward unlocked.",
+    continueText: "Continue",
+    paused: "Paused",
+    caught: "Caught",
+    aboutBack: "Tap or Esc: back",
+    tutorialTexts: [
+      "Wappo moves up. The yellow monster moves down on the same line toward him.",
+      "Wappo moves down. The monster closes in with two chase steps.",
+      "Wappo moves left and teleports. The monster keeps advancing upward.",
+      "Wappo walks toward the flame. The monster keeps chasing.",
+      "Wappo moves left. Walls still block the monster path.",
+      "Wappo moves one step toward the exit. The monster falls into the teleport.",
+      "Wappo reaches the exit and completes the level."
+    ]
+  }
+};
 
-const TUTORIAL_TEXTS = [
-  "Wappo moves up. The yellow monster moves down on the same line toward him.",
-  "Wappo moves down. The monster closes in with two chase steps.",
-  "Wappo moves left and teleports. The monster keeps advancing upward.",
-  "Wappo walks toward the flame. The monster keeps chasing.",
-  "Wappo moves left. Walls still block the monster path.",
-  "Wappo moves one step toward the exit. The monster falls into the teleport.",
-  "Wappo reaches the exit and completes the level."
-];
 const TUTORIAL_MOVES = [1, 6, 2, 1, 2, 6, 6];
 
 class Cell {
@@ -120,6 +222,7 @@ class Game {
     this.levelTarget = 0;
     this.levelProgressUnits = 0;
     this.playerName = "Rookie";
+    this.locale = "ru";
     this.startedGame = false;
     this.soundEnabled = true;
     this.vibrationEnabled = true;
@@ -144,6 +247,7 @@ class Game {
     this.startedGame = localStorage.getItem(`${STORAGE_PREFIX}-started`) === "1";
     this.tutorialDone = localStorage.getItem(`${STORAGE_PREFIX}-tutorial-done`) === "1";
     this.playerName = localStorage.getItem(`${STORAGE_PREFIX}-player-name`) || "Rookie";
+    this.locale = localStorage.getItem(`${STORAGE_PREFIX}-locale`) || "ru";
     this.soundEnabled = localStorage.getItem(`${STORAGE_PREFIX}-sound`) !== "0";
     this.vibrationEnabled = localStorage.getItem(`${STORAGE_PREFIX}-vibration`) !== "0";
     this.lightEnabled = localStorage.getItem(`${STORAGE_PREFIX}-light`) !== "0";
@@ -157,6 +261,7 @@ class Game {
     localStorage.setItem(`${STORAGE_PREFIX}-started`, this.startedGame ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-tutorial-done`, this.tutorialDone ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-player-name`, this.playerName);
+    localStorage.setItem(`${STORAGE_PREFIX}-locale`, this.locale);
     localStorage.setItem(`${STORAGE_PREFIX}-sound`, this.soundEnabled ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-vibration`, this.vibrationEnabled ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-light`, this.lightEnabled ? "1" : "0");
@@ -169,6 +274,7 @@ class Game {
     ]);
     this.levels = levels;
     this.assets = assets;
+    this.updateStaticUi();
     this.levelIndex = Math.max(0, Math.min(this.levelIndex, this.levels.length - 1));
     this.lastProgressLevel = Math.max(0, Math.min(this.lastProgressLevel, this.levels.length - 1));
     this.loadLevel(this.levelIndex, false);
@@ -179,6 +285,44 @@ class Game {
     this.canvas.addEventListener("mousedown", (event) => this.onCanvasClick(event));
     this.canvas.addEventListener("touchstart", (event) => this.onCanvasClick(event), { passive: false });
     requestAnimationFrame(this.boundLoop);
+  }
+
+  strings() {
+    return STRINGS[this.locale] ?? STRINGS.ru;
+  }
+
+  t(key) {
+    return this.strings()[key];
+  }
+
+  mainMenuItems() {
+    return this.t("mainMenu");
+  }
+
+  pauseMenuItems() {
+    return this.t("pauseMenu");
+  }
+
+  gameOverMenuItems() {
+    return this.t("gameOverMenu");
+  }
+
+  settingsItems() {
+    return this.t("settingsItems");
+  }
+
+  updateStaticUi() {
+    document.documentElement.lang = this.locale;
+    document.title = this.t("appTitle");
+    document.getElementById("appTitle").textContent = this.t("appTitle");
+    document.getElementById("restartBtn").textContent = this.t("restart");
+    document.getElementById("menuBtn").textContent = this.t("menu");
+    document.getElementById("infoTitle").textContent = this.t("browserPort");
+    document.getElementById("infoDesc1").textContent = this.t("browserDesc1");
+    document.getElementById("infoDesc2").innerHTML = this.t("browserDesc2")
+      .replace("Enter", "<code>Enter</code>")
+      .replace("Esc", "<code>Esc</code>");
+    document.getElementById("infoDesc3").textContent = this.t("browserDesc3");
   }
 
   canvasPoint(event) {
@@ -226,7 +370,7 @@ class Game {
       return;
     }
     if (this.scene === "main_menu") {
-      this.clickMenuList(MAIN_MENU_ITEMS, 84, 20, x, y);
+      this.clickMenuList(this.mainMenuItems(), 84, 20, x, y);
       return;
     }
     if (["pause", "game_over", "milestone"].includes(this.scene)) {
@@ -235,8 +379,8 @@ class Game {
     }
     if (this.scene === "settings") {
       if (x < 18 || x > 222) return;
-      for (let index = 0; index < SETTINGS_ITEMS.length; index += 1) {
-        const rowY = 96 + index * 36;
+      for (let index = 0; index < this.settingsItems().length; index += 1) {
+        const rowY = 120 + index * 28;
         if (y >= rowY && y <= rowY + 28) {
           this.settingsIndex = index;
           this.toggleSetting();
@@ -260,7 +404,7 @@ class Game {
   }
 
   levelStatus() {
-    return `Level ${this.levelIndex + 1}`;
+    return `${this.t("levelLabel")} ${this.levelIndex + 1}`;
   }
 
   tutorialScriptMode() {
@@ -329,17 +473,20 @@ class Game {
   }
 
   currentMenuItems() {
-    if (this.scene === "pause") return PAUSE_ITEMS;
-    if (this.scene === "game_over") return GAME_OVER_ITEMS;
-    if (this.scene === "milestone") return MILESTONE_ITEMS;
-    return MAIN_MENU_ITEMS;
+    if (this.scene === "pause") return this.pauseMenuItems();
+    if (this.scene === "game_over") return this.gameOverMenuItems();
+    if (this.scene === "milestone") return this.t("milestoneItems");
+    return this.mainMenuItems();
   }
 
   toggleSetting() {
     if (this.settingsIndex === 0) this.soundEnabled = !this.soundEnabled;
     else if (this.settingsIndex === 1) this.vibrationEnabled = !this.vibrationEnabled;
     else if (this.settingsIndex === 2) this.lightEnabled = !this.lightEnabled;
-    else if (this.settingsIndex === 3) this.scene = this.settingsReturnScene;
+    else if (this.settingsIndex === 3) {
+      this.locale = this.locale === "ru" ? "en" : "ru";
+      this.updateStaticUi();
+    } else if (this.settingsIndex === 4) this.scene = this.settingsReturnScene;
     this.saveState();
   }
 
@@ -378,8 +525,8 @@ class Game {
       return;
     }
     if (this.scene === "settings") {
-      if (event.key === "ArrowUp") this.settingsIndex = (this.settingsIndex + SETTINGS_ITEMS.length - 1) % SETTINGS_ITEMS.length;
-      else if (event.key === "ArrowDown") this.settingsIndex = (this.settingsIndex + 1) % SETTINGS_ITEMS.length;
+      if (event.key === "ArrowUp") this.settingsIndex = (this.settingsIndex + this.settingsItems().length - 1) % this.settingsItems().length;
+      else if (event.key === "ArrowDown") this.settingsIndex = (this.settingsIndex + 1) % this.settingsItems().length;
       else if (["ArrowLeft", "ArrowRight", "Enter", " "].includes(event.key)) this.toggleSetting();
       else if (event.key === "Escape") this.scene = this.settingsReturnScene;
       return;
@@ -492,8 +639,8 @@ class Game {
         return;
       }
       if (this.scene === "settings") {
-        if (action === "up") this.settingsIndex = (this.settingsIndex + SETTINGS_ITEMS.length - 1) % SETTINGS_ITEMS.length;
-        else if (action === "down") this.settingsIndex = (this.settingsIndex + 1) % SETTINGS_ITEMS.length;
+        if (action === "up") this.settingsIndex = (this.settingsIndex + this.settingsItems().length - 1) % this.settingsItems().length;
+        else if (action === "down") this.settingsIndex = (this.settingsIndex + 1) % this.settingsItems().length;
         else if (action === "left" || action === "right") this.toggleSetting();
         return;
       }
@@ -608,7 +755,7 @@ class Game {
         this.playerTeleportedThisTurn = false;
         if (this.scene === "game" && this.levelIndex === 0 && !this.tutorialDone) {
           this.tutorialStep += 1;
-          if (this.tutorialStep >= TUTORIAL_TEXTS.length) {
+          if (this.tutorialStep >= this.t("tutorialTexts").length) {
             this.completeTutorialLevel();
           } else {
             this.scene = "tutorial";
@@ -662,9 +809,9 @@ class Game {
       this.scene = "level_result";
       this.turnPhase = "idle";
       this.inputLocked = false;
-      this.setStatus(`Score ${this.score}`);
+      this.setStatus(`${this.t("score")} ${this.score}`);
     } else {
-      this.setStatus(`${this.levelStatus()}  Score ${this.score}`);
+      this.setStatus(`${this.levelStatus()}  ${this.t("score")} ${this.score}`);
     }
   }
 
@@ -946,7 +1093,7 @@ class Game {
         const textX = compactMainMenu ? 66 : 70;
         const arrowX = compactMainMenu ? 20 : 22;
         if (icon) this.ctx.drawImage(icon, iconX, y - 2);
-        this.ctx.fillStyle = this.scene === "main_menu" && index === 1 && !this.startedGame ? "#6f6756" : "#000";
+      this.ctx.fillStyle = this.scene === "main_menu" && index === 1 && !this.startedGame ? "#6f6756" : "#000";
         this.ctx.fillText(item, textX, y + (compactMainMenu ? 15 : 18));
         if (index === this.menuIndex) this.ctx.drawImage(this.assets.arrow, arrowX, y + 3);
       });
@@ -1039,7 +1186,7 @@ class Game {
   }
 
   tutorialActive() {
-    return this.levelIndex === 0 && !this.tutorialDone && this.tutorialStep < TUTORIAL_TEXTS.length;
+    return this.levelIndex === 0 && !this.tutorialDone && this.tutorialStep < this.t("tutorialTexts").length;
   }
 
   drawMainMenu() {
@@ -1051,11 +1198,11 @@ class Game {
       this.ctx.fillText("WAPPO", 52, 60);
       this.ctx.font = "10px Trebuchet MS";
       this.ctx.fillText("Nostalgic mobile labyrinth", 54, 73);
-      this.drawMenuList(MAIN_MENU_ITEMS, 84);
+      this.drawMenuList(this.mainMenuItems(), 84);
       this.ctx.fillStyle = "#000";
       this.ctx.font = "10px Trebuchet MS";
-      const bestLevel = `Best level: ${this.lastProgressLevel + 1}`;
-      const bestScore = `Best score: ${this.bestScore}`;
+      const bestLevel = `${this.t("bestLevel")}: ${this.lastProgressLevel + 1}`;
+      const bestScore = `${this.t("bestScore")}: ${this.bestScore}`;
       this.ctx.fillText(bestLevel, 120 - this.ctx.measureText(bestLevel).width / 2, 278);
       this.ctx.fillText(bestScore, 120 - this.ctx.measureText(bestScore).width / 2, 290);
     }
@@ -1065,27 +1212,19 @@ class Game {
     this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 20px Trebuchet MS";
-    this.ctx.fillText("Help", 20, 38);
-    const lines = [
-      "Reach the exit.",
-      "Arrow keys move Wappo one tile.",
-      "Push flame blocks into open cells.",
-      "Teleports jump to the linked pad.",
-      "Red and blue monsters chase differently.",
-      "Merged monsters become police.",
-      "Esc opens the pause menu."
-    ];
+    this.ctx.fillText(this.t("helpTitle"), 20, 38);
+    const lines = this.t("helpLines");
     this.ctx.font = "14px Trebuchet MS";
     lines.forEach((line, i) => this.ctx.fillText(line, 18, 78 + i * 24));
     this.ctx.font = "12px Trebuchet MS";
-    this.ctx.fillText("Esc: back", 18, 304);
+    this.ctx.fillText(this.t("backHint"), 18, 304);
   }
 
   drawAbout() {
     this.ctx.drawImage(this.assets.about, 0, 0);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "12px Trebuchet MS";
-    this.ctx.fillText("Esc: back", 18, 304);
+    this.ctx.fillText(this.t("aboutBack"), 18, 304);
   }
 
   drawHighScore() {
@@ -1093,15 +1232,15 @@ class Game {
     this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
-    this.ctx.fillText("High Score", 62, 82);
+    this.ctx.fillText(this.t("highScore"), 62, 82);
     this.ctx.font = "15px Trebuchet MS";
     [
-      `Player: ${this.playerName}`,
-      `Best score: ${this.bestScore}`,
-      `Best level: ${this.lastProgressLevel + 1}`
+      `${this.t("player")}: ${this.playerName}`,
+      `${this.t("bestScore")}: ${this.bestScore}`,
+      `${this.t("bestLevel")}: ${this.lastProgressLevel + 1}`
     ].forEach((line, i) => this.ctx.fillText(line, 34, 132 + i * 30));
     this.ctx.font = "13px Trebuchet MS";
-    this.ctx.fillText("Tap or Esc: back", 60, 244);
+    this.ctx.fillText(this.t("backHint"), 60, 244);
   }
 
   drawSettings() {
@@ -1109,17 +1248,23 @@ class Game {
     this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
-    this.ctx.fillText("Settings", 70, 82);
-    const values = [this.soundEnabled ? "On" : "Off", this.vibrationEnabled ? "On" : "Off", this.lightEnabled ? "On" : "Off", ""];
+    this.ctx.fillText(this.t("settings"), 70, 82);
+    const values = [
+      this.soundEnabled ? this.t("on") : this.t("off"),
+      this.vibrationEnabled ? this.t("on") : this.t("off"),
+      this.lightEnabled ? this.t("on") : this.t("off"),
+      this.locale === "ru" ? this.t("langRu") : this.t("langEn"),
+      ""
+    ];
     this.ctx.font = "bold 16px Trebuchet MS";
-    SETTINGS_ITEMS.forEach((item, i) => {
+    this.settingsItems().forEach((item, i) => {
       const y = 120 + i * 28;
       this.ctx.fillText(item, 56, y + 16);
       if (values[i]) this.ctx.fillText(values[i], 160, y + 16);
       if (i === this.settingsIndex) this.ctx.drawImage(this.assets.arrow, 28, y + 2);
     });
     this.ctx.font = "13px Trebuchet MS";
-    this.ctx.fillText("Tap or Left/Right: toggle", 26, 250);
+    this.ctx.fillText(this.t("toggleHint"), 26, 250);
   }
 
   drawLevelResult() {
@@ -1133,16 +1278,16 @@ class Game {
     this.ctx.strokeRect(22, 60, 196, 178);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
-    const title = "Level Complete";
+    const title = this.t("levelComplete");
     this.ctx.fillText(title, 120 - this.ctx.measureText(title).width / 2, 90);
     this.ctx.font = "15px Trebuchet MS";
     [
-      `Level: ${this.completedLevelNumber ?? this.levelIndex + 1}`,
-      `Score: ${this.score}`,
-      `Best score: ${this.bestScore}`
+      `${this.t("levelLabel")}: ${this.completedLevelNumber ?? this.levelIndex + 1}`,
+      `${this.t("score")}: ${this.score}`,
+      `${this.t("bestScore")}: ${this.bestScore}`
     ].forEach((line, i) => this.ctx.fillText(line, 42, 128 + i * 28));
     this.ctx.font = "14px Trebuchet MS";
-    const prompt = "Enter: continue";
+    const prompt = this.t("continueHint");
     this.ctx.fillText(prompt, 120 - this.ctx.measureText(prompt).width / 2, 212);
   }
 
@@ -1151,10 +1296,10 @@ class Game {
     this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.drawImage(this.assets.arrow, 220, 300);
     this.ctx.drawImage(this.assets.CCicon, 120, 298);
-    this.drawWrappedText(TUTORIAL_TEXTS[this.tutorialStep] ?? "", 40, 68, 149, 20);
+    this.drawWrappedText(this.t("tutorialTexts")[this.tutorialStep] ?? "", 40, 68, 149, 20);
     this.ctx.font = "12px Trebuchet MS";
     this.ctx.fillStyle = "#000";
-    this.ctx.fillText("Enter: continue   Esc: skip tutorial", 14, 278);
+    this.ctx.fillText(this.locale === "ru" ? "Enter: продолжить   Esc: пропуск" : "Enter: continue   Esc: skip tutorial", 14, 278);
   }
 
   drawMilestoneOverlay() {
@@ -1168,12 +1313,12 @@ class Game {
     this.ctx.strokeRect(18, 56, 204, 220);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
-    const title = "Congratulations";
+      const title = this.t("congratulations");
     this.ctx.fillText(title, 120 - this.ctx.measureText(title).width / 2, 90);
-    const message = this.pendingMilestone === 50 ? "Level 50 reward unlocked." : "Level 100 reward unlocked.";
+      const message = this.pendingMilestone === 50 ? this.t("reward50") : this.t("reward100");
     this.drawWrappedText(message, 30, 124, 176, 20);
     this.ctx.font = "14px Trebuchet MS";
-    this.ctx.fillText("Continue", 80, 236);
+      this.ctx.fillText(this.t("continueText"), 80, 236);
     this.ctx.drawImage(this.assets.arrow, 36, 222);
   }
 
@@ -1205,8 +1350,8 @@ class Game {
     if (this.scene === "tutorial") return this.drawTutorialScreen();
     if (this.scene === "milestone") return this.drawMilestoneOverlay();
     this.drawBoard();
-    if (this.scene === "pause") this.drawOverlayMenu("Paused", PAUSE_ITEMS);
-    if (this.scene === "game_over") this.drawOverlayMenu("Caught", GAME_OVER_ITEMS);
+      if (this.scene === "pause") this.drawOverlayMenu(this.t("paused"), this.pauseMenuItems());
+      if (this.scene === "game_over") this.drawOverlayMenu(this.t("caught"), this.gameOverMenuItems());
   }
 
   loop(time) {
@@ -1250,6 +1395,6 @@ for (const button of document.querySelectorAll("[data-action]")) {
   bindPress(button, () => game.handleControl(button.dataset.action));
 }
 game.init().catch((error) => {
-  document.getElementById("status").textContent = "Failed to load game";
+  document.getElementById("status").textContent = STRINGS.ru.loading;
   console.error(error);
 });

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,12 +11,12 @@
     <section class="game-panel">
       <div class="hud">
         <div>
-          <strong>Wappo2 Web</strong>
-          <span id="status">Loading...</span>
+          <strong id="appTitle">Wappo2 Web</strong>
+          <span id="status">Загрузка...</span>
         </div>
         <div class="hud-actions">
-          <button id="restartBtn" type="button">Restart</button>
-          <button id="menuBtn" type="button">Menu</button>
+          <button id="restartBtn" type="button">Заново</button>
+          <button id="menuBtn" type="button">Меню</button>
         </div>
       </div>
       <canvas id="gameCanvas" width="240" height="320" aria-label="Wappo2 game canvas"></canvas>
@@ -30,10 +30,10 @@
       </div>
     </section>
     <aside class="info-panel">
-      <h1>Browser Port</h1>
-      <p>This version uses the original extracted backgrounds, menus, sprites, walls, teleports, flames, and title screens.</p>
-      <p>Controls: arrow keys move, <code>Enter</code> confirms menus and tutorial prompts, <code>Esc</code> pauses or goes back.</p>
-      <p>The page is static and GitHub Pages compatible. Progress is saved in browser storage.</p>
+      <h1 id="infoTitle">Браузерная версия</h1>
+      <p id="infoDesc1">Эта версия использует оригинальные извлеченные фоны, меню, спрайты, стены, телепорты, пламя и титульные экраны.</p>
+      <p id="infoDesc2">Управление: <code>Enter</code> подтверждает меню и подсказки, <code>Esc</code> ставит игру на паузу или возвращает назад.</p>
+      <p id="infoDesc3">Страница полностью статическая и совместима с GitHub Pages. Прогресс сохраняется в браузере.</p>
     </aside>
   </main>
   <script type="module" src="./app.js"></script>

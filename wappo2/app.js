@@ -174,6 +174,7 @@ class Game {
     this.scene = "splash_siemens";
     window.addEventListener("keydown", (event) => this.onKey(event));
     this.canvas.addEventListener("click", (event) => this.onCanvasClick(event));
+    this.canvas.addEventListener("pointerdown", (event) => this.onCanvasClick(event));
     requestAnimationFrame(this.boundLoop);
   }
 

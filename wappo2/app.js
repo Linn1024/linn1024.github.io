@@ -887,8 +887,8 @@ class Game {
     this.ctx.drawImage(image, frame * frameW, 0, frameW, frameH, x, y, frameW, frameH);
   }
 
-  blitActorFrame(image, facing, animFrame, x, y, frameW = 40, frameH = 52) {
-    this.ctx.drawImage(image, facing * frameW, animFrame * frameH, frameW, frameH, x, y, frameW, frameH);
+  blitActorFrame(image, facing, x, y, frameW = 40, frameH = 52) {
+    this.ctx.drawImage(image, facing * frameW, 0, frameW, frameH, x, y, frameW, frameH);
   }
 
   drawImageCentered(image, topY = null) {
@@ -1003,17 +1003,17 @@ class Game {
     }
     if (this.turnPhase !== "death_anim") {
       const [px, py] = this.tileXY(this.playerTile);
-      this.blitActorFrame(this.assets.wstrip, this.playerFacing(), this.objectFrame(), px + this.playerOffsetX, py - 3 + this.playerOffsetY);
+      this.blitActorFrame(this.assets.wstrip, this.playerFacing(), px + this.playerOffsetX, py - 3 + this.playerOffsetY);
       for (const enemy of this.enemies) {
         const base = enemy.motionTile ?? enemy.tile;
         const [ex, ey] = this.tileXY(base);
         const drawX = ex + enemy.offsetX;
         const drawY = ey + enemy.offsetY;
-        if (enemy.kind === XOT) this.blitActorFrame(this.assets.xstrip, enemy.direction, this.objectFrame(), drawX, drawY - 3);
-        else if (enemy.kind === YEL) this.blitActorFrame(this.assets.ystrip, enemy.direction, this.objectFrame(), drawX, drawY - 3);
+        if (enemy.kind === XOT) this.blitActorFrame(this.assets.xstrip, enemy.direction, drawX, drawY - 3);
+        else if (enemy.kind === YEL) this.blitActorFrame(this.assets.ystrip, enemy.direction, drawX, drawY - 3);
         else {
           const strip = enemy.moveMode === "diagonal" ? this.assets.diag : this.assets.pstrip;
-          this.blitActorFrame(strip, enemy.direction, this.objectFrame(), drawX, enemy.moveMode === "diagonal" ? drawY : drawY - 3);
+          this.blitActorFrame(strip, enemy.direction, drawX, enemy.moveMode === "diagonal" ? drawY : drawY - 3);
         }
       }
     } else {

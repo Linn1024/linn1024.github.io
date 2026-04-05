@@ -809,8 +809,8 @@ class Game {
 
   drawMenuList(items, startY) {
       const compactMainMenu = this.scene === "main_menu";
-      const rowStep = compactMainMenu ? 22 : 28;
-      const font = compactMainMenu ? "bold 14px Trebuchet MS" : "bold 18px Trebuchet MS";
+      const rowStep = compactMainMenu ? 19 : 28;
+      const font = compactMainMenu ? "bold 13px Trebuchet MS" : "bold 18px Trebuchet MS";
       this.ctx.font = font;
       items.forEach((item, index) => {
         const y = startY + index * rowStep;
@@ -820,7 +820,7 @@ class Game {
         const arrowX = compactMainMenu ? 20 : 22;
         if (icon) this.ctx.drawImage(icon, iconX, y - 2);
         this.ctx.fillStyle = this.scene === "main_menu" && index === 1 && !this.startedGame ? "#6f6756" : "#000";
-        this.ctx.fillText(item, textX, y + (compactMainMenu ? 15 : 18));
+        this.ctx.fillText(item, textX, y + (compactMainMenu ? 14 : 18));
         if (index === this.menuIndex) this.ctx.drawImage(this.assets.arrow, arrowX, y + 3);
       });
     }
@@ -915,19 +915,19 @@ class Game {
   drawMainMenu() {
       this.ctx.drawImage(this.assets.bggame, 0, 0);
       this.ctx.drawImage(this.assets.wood, 8, 35);
-      this.ctx.drawImage(this.assets.icon, 20, 48);
+      this.ctx.drawImage(this.assets.icon, 18, 44);
       this.ctx.fillStyle = "rgb(103,26,0)";
-      this.ctx.font = "bold 18px Georgia";
-      this.ctx.fillText("WAPPO", 52, 62);
-      this.ctx.font = "10px Trebuchet MS";
-      this.ctx.fillText("Nostalgic mobile labyrinth", 54, 76);
-      this.drawMenuList(MAIN_MENU_ITEMS, 88);
+      this.ctx.font = "bold 16px Georgia";
+      this.ctx.fillText("WAPPO", 50, 58);
+      this.ctx.font = "9px Trebuchet MS";
+      this.ctx.fillText("Nostalgic mobile labyrinth", 52, 70);
+      this.drawMenuList(MAIN_MENU_ITEMS, 80);
       this.ctx.fillStyle = "#000";
-      this.ctx.font = "10px Trebuchet MS";
+      this.ctx.font = "9px Trebuchet MS";
       const bestLevel = `Best level: ${this.lastProgressLevel + 1}`;
       const bestScore = `Best score: ${this.bestScore}`;
-      this.ctx.fillText(bestLevel, 120 - this.ctx.measureText(bestLevel).width / 2, 292);
-      this.ctx.fillText(bestScore, 120 - this.ctx.measureText(bestScore).width / 2, 305);
+      this.ctx.fillText(bestLevel, 120 - this.ctx.measureText(bestLevel).width / 2, 252);
+      this.ctx.fillText(bestScore, 120 - this.ctx.measureText(bestScore).width / 2, 264);
     }
 
   drawHelp() {

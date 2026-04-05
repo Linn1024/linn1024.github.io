@@ -1045,6 +1045,10 @@ class Game {
     this.ctx.drawImage(image, animFrame * frameW, row * frameH, frameW, frameH, x, y, frameW, frameH);
   }
 
+  blitPlayerFrame(image, facing, animFrame, x, y, frameW = 40, frameH = 52) {
+    this.ctx.drawImage(image, facing * frameW, animFrame * frameH, frameW, frameH, x, y, frameW, frameH);
+  }
+
   drawImageCentered(image, topY = null) {
     const x = Math.floor((SCREEN_WIDTH - image.width) / 2);
     const y = topY == null ? Math.floor((SCREEN_HEIGHT - image.height) / 2) : topY;
@@ -1158,7 +1162,7 @@ class Game {
     if (this.turnPhase !== "death_anim") {
       const [px, py] = this.tileXY(this.playerTile);
       const playerAnim = (this.playerOffsetX !== 0 || this.playerOffsetY !== 0) ? this.objectFrame() : 0;
-      this.blitActorFrame(this.assets.wstrip, this.playerFacing(), playerAnim, px + this.playerOffsetX, py - 3 + this.playerOffsetY);
+      this.blitPlayerFrame(this.assets.wstrip, this.playerFacing(), playerAnim, px + this.playerOffsetX, py - 3 + this.playerOffsetY);
       for (const enemy of this.enemies) {
         const base = enemy.motionTile ?? enemy.tile;
         const [ex, ey] = this.tileXY(base);

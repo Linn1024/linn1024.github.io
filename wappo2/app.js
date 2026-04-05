@@ -1272,27 +1272,22 @@ class Game {
   }
 
   drawLevelResult() {
-    this.drawBoard();
-    this.ctx.fillStyle = "rgba(255,255,255,0.9)";
-    this.ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    this.ctx.fillStyle = "#fff7dc";
-    this.ctx.fillRect(22, 60, 196, 178);
-    this.ctx.strokeStyle = "#8b5a12";
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeRect(22, 60, 196, 178);
+    this.ctx.drawImage(this.assets.bggame, 0, 0);
+    this.ctx.drawImage(this.assets.wood, 8, 35);
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
     const title = this.t("levelComplete");
-    this.ctx.fillText(title, 120 - this.ctx.measureText(title).width / 2, 90);
-    this.ctx.font = "15px Trebuchet MS";
+    this.ctx.fillText(title, 20, 38);
+    this.ctx.font = "14px Trebuchet MS";
     [
       `${this.t("levelLabel")}: ${this.completedLevelNumber ?? this.levelIndex + 1}`,
       `${this.t("score")}: ${this.score}`,
-      `${this.t("bestScore")}: ${this.bestScore}`
-    ].forEach((line, i) => this.ctx.fillText(line, 42, 128 + i * 28));
-    this.ctx.font = "14px Trebuchet MS";
-    const prompt = this.t("continueHint");
-    this.ctx.fillText(prompt, 120 - this.ctx.measureText(prompt).width / 2, 212);
+      `${this.t("bestScore")}: ${this.bestScore}`,
+      "",
+      this.t("continueHint")
+    ].forEach((line, i) => this.ctx.fillText(line, 20, 96 + i * 28));
+    this.ctx.drawImage(this.assets.arrow, 220, 300);
+    this.ctx.drawImage(this.assets.CCicon, 120, 298);
   }
 
   drawTutorialScreen() {
@@ -1301,6 +1296,7 @@ class Game {
     this.ctx.drawImage(this.assets.arrow, 220, 300);
     this.ctx.drawImage(this.assets.CCicon, 120, 298);
     this.drawWrappedText(this.t("tutorialTexts")[this.tutorialStep] ?? "", 40, 68, 149, 20);
+    const prompt = this.t("continueHint");
     this.ctx.font = "12px Trebuchet MS";
     this.ctx.fillStyle = "#000";
     this.ctx.fillText(this.locale === "ru" ? "Enter: продолжить   Esc: пропуск" : "Enter: continue   Esc: skip tutorial", 14, 278);

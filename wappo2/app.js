@@ -885,12 +885,17 @@ class Game {
     return { down: 0, up: 1, left: 2, right: 3 }[this.lastMove] ?? 0;
   }
 
+  actorFacingRow(facing) {
+    return [1, 0, 2, 3][facing] ?? 0;
+  }
+
   blitFrame(image, frame, x, y, frameW = 40, frameH = 52) {
     this.ctx.drawImage(image, frame * frameW, 0, frameW, frameH, x, y, frameW, frameH);
   }
 
   blitActorFrame(image, facing, animFrame, x, y, frameW = 40, frameH = 52) {
-    this.ctx.drawImage(image, animFrame * frameW, facing * frameH, frameW, frameH, x, y, frameW, frameH);
+    const row = this.actorFacingRow(facing);
+    this.ctx.drawImage(image, animFrame * frameW, row * frameH, frameW, frameH, x, y, frameW, frameH);
   }
 
   drawImageCentered(image, topY = null) {

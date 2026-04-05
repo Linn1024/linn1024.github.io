@@ -223,6 +223,7 @@ class Game {
     this.levelProgressUnits = 0;
     this.playerName = "Rookie";
     this.locale = "ru";
+    this.gameSpeed = "slow";
     this.startedGame = false;
     this.soundEnabled = true;
     this.vibrationEnabled = true;
@@ -248,6 +249,7 @@ class Game {
     this.tutorialDone = localStorage.getItem(`${STORAGE_PREFIX}-tutorial-done`) === "1";
     this.playerName = localStorage.getItem(`${STORAGE_PREFIX}-player-name`) || "Rookie";
     this.locale = localStorage.getItem(`${STORAGE_PREFIX}-locale`) || "ru";
+    this.gameSpeed = localStorage.getItem(`${STORAGE_PREFIX}-speed`) || "slow";
     this.soundEnabled = localStorage.getItem(`${STORAGE_PREFIX}-sound`) !== "0";
     this.vibrationEnabled = localStorage.getItem(`${STORAGE_PREFIX}-vibration`) !== "0";
     this.lightEnabled = localStorage.getItem(`${STORAGE_PREFIX}-light`) !== "0";
@@ -262,6 +264,7 @@ class Game {
     localStorage.setItem(`${STORAGE_PREFIX}-tutorial-done`, this.tutorialDone ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-player-name`, this.playerName);
     localStorage.setItem(`${STORAGE_PREFIX}-locale`, this.locale);
+    localStorage.setItem(`${STORAGE_PREFIX}-speed`, this.gameSpeed);
     localStorage.setItem(`${STORAGE_PREFIX}-sound`, this.soundEnabled ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-vibration`, this.vibrationEnabled ? "1" : "0");
     localStorage.setItem(`${STORAGE_PREFIX}-light`, this.lightEnabled ? "1" : "0");
@@ -308,7 +311,33 @@ class Game {
   }
 
   settingsItems() {
-    return this.t("settingsItems");
+    return this.locale === "ru"
+      ? ["Звук", "Вибрация", "Свет", "Скорость", "Язык", "Назад"]
+      : ["Sound", "Vibration", "Light", "Speed", "Language", "Back"];
+  }
+
+  settingsValueLabels() {
+    const speedLabel = this.gameSpeed === "slow"
+      ? (this.locale === "ru" ? "Медленно" : "Slow")
+      : this.gameSpeed === "normal"
+        ? (this.locale === "ru" ? "Нормально" : "Normal")
+        : (this.locale === "ru" ? "Быстро" : "Fast");
+    return [
+      this.soundEnabled ? this.t("on") : this.t("off"),
+      this.vibrationEnabled ? this.t("on") : this.t("off"),
+      this.lightEnabled ? this.t("on") : this.t("off"),
+      speedLabel,
+      this.locale === "ru" ? this.t("langRu") : this.t("langEn"),
+      ""
+    ];
+  }
+
+  settingsRowY(index) {
+    return 108 + index * 24;
+  }
+
+  currentFps() {
+    return { slow: 20, normal: 30, fast: 40 }[this.gameSpeed] ?? 20;
   }
 
   updateStaticUi() {
@@ -317,12 +346,6 @@ class Game {
     document.getElementById("appTitle").textContent = this.t("appTitle");
     document.getElementById("restartBtn").textContent = this.t("restart");
     document.getElementById("menuBtn").textContent = this.t("menu");
-    document.getElementById("infoTitle").textContent = this.t("browserPort");
-    document.getElementById("infoDesc1").textContent = this.t("browserDesc1");
-    document.getElementById("infoDesc2").innerHTML = this.t("browserDesc2")
-      .replace("Enter", "<code>Enter</code>")
-      .replace("Esc", "<code>Esc</code>");
-    document.getElementById("infoDesc3").textContent = this.t("browserDesc3");
   }
 
   canvasPoint(event) {
@@ -380,7 +403,7 @@ class Game {
     if (this.scene === "settings") {
       if (x < 18 || x > 222) return;
       for (let index = 0; index < this.settingsItems().length; index += 1) {
-        const rowY = 120 + index * 28;
+        const rowY = this.settingsRowY(index);
         if (y >= rowY && y <= rowY + 28) {
           this.settingsIndex = index;
           this.toggleSetting();
@@ -484,9 +507,11 @@ class Game {
     else if (this.settingsIndex === 1) this.vibrationEnabled = !this.vibrationEnabled;
     else if (this.settingsIndex === 2) this.lightEnabled = !this.lightEnabled;
     else if (this.settingsIndex === 3) {
+      this.gameSpeed = this.gameSpeed === "slow" ? "normal" : this.gameSpeed === "normal" ? "fast" : "slow";
+    } else if (this.settingsIndex === 4) {
       this.locale = this.locale === "ru" ? "en" : "ru";
       this.updateStaticUi();
-    } else if (this.settingsIndex === 4) this.scene = this.settingsReturnScene;
+    } else if (this.settingsIndex === 5) this.scene = this.settingsReturnScene;
     this.saveState();
   }
 
@@ -1253,22 +1278,16 @@ class Game {
     this.ctx.fillStyle = "#000";
     this.ctx.font = "bold 18px Trebuchet MS";
     this.ctx.fillText(this.t("settings"), 70, 82);
-    const values = [
-      this.soundEnabled ? this.t("on") : this.t("off"),
-      this.vibrationEnabled ? this.t("on") : this.t("off"),
-      this.lightEnabled ? this.t("on") : this.t("off"),
-      this.locale === "ru" ? this.t("langRu") : this.t("langEn"),
-      ""
-    ];
+    const values = this.settingsValueLabels();
     this.ctx.font = "bold 16px Trebuchet MS";
     this.settingsItems().forEach((item, i) => {
-      const y = 120 + i * 28;
+      const y = this.settingsRowY(i);
       this.ctx.fillText(item, 56, y + 16);
       if (values[i]) this.ctx.fillText(values[i], 160, y + 16);
       if (i === this.settingsIndex) this.ctx.drawImage(this.assets.arrow, 28, y + 2);
     });
     this.ctx.font = "13px Trebuchet MS";
-    this.ctx.fillText(this.t("toggleHint"), 26, 250);
+    this.ctx.fillText(this.t("toggleHint"), 26, 262);
   }
 
   drawLevelResult() {
@@ -1355,7 +1374,7 @@ class Game {
   }
 
   loop(time) {
-    if (!this.lastFrameTime || time - this.lastFrameTime >= 1000 / FPS) {
+    if (!this.lastFrameTime || time - this.lastFrameTime >= 1000 / this.currentFps()) {
       this.lastFrameTime = time;
       this.update();
       this.draw();

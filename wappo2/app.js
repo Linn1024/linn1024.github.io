@@ -755,6 +755,14 @@ class Game {
         const moved = this.advanceEnemyStep(enemy);
         enemy.totalSteps = Math.max(0, enemy.totalSteps - 1);
         if (enemy.offsetX === 0 && enemy.offsetY === 0) {
+          if (enemy.tile === this.playerTile) {
+            if (!this.tutorialScriptMode()) {
+              this.turnPhase = "death_anim";
+              this.deathFrame = 0;
+              this.deathTimer = 9;
+              return;
+            }
+          }
           this.resolveEnemySpecials(enemy);
           if (enemy.tile === this.playerTile) {
             if (!this.tutorialScriptMode()) {
@@ -1389,9 +1397,12 @@ function bindPress(element, handler) {
     event.preventDefault?.();
     handler(event);
   };
-  element.addEventListener("click", wrapped);
-  element.addEventListener("pointerdown", wrapped);
-  element.addEventListener("touchstart", wrapped, { passive: false });
+  if (window.PointerEvent) {
+    element.addEventListener("pointerdown", wrapped);
+  } else {
+    element.addEventListener("click", wrapped);
+    element.addEventListener("touchstart", wrapped, { passive: false });
+  }
 }
 
 bindPress(document.getElementById("restartBtn"), () => {

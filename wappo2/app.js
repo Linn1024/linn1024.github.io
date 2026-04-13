@@ -1070,21 +1070,8 @@ class Game {
       if (enemy.moveMode === "horizontal") return this.advanceHorizontalStep(enemy);
       if (enemy.moveMode === "vertical") return this.advanceVerticalStep(enemy);
     }
-    const ex = enemy.tile % GRID;
-    const ey = Math.floor(enemy.tile / GRID);
-    const px = this.playerTile % GRID;
-    const py = Math.floor(this.playerTile / GRID);
-    if (px !== ex && py !== ey) {
-      enemy.moveMode = "diagonal";
-      enemy.motionTile = enemy.tile;
-      enemy.targetTile = enemy.tile + (px > ex ? 1 : -1) + (py > ey ? 6 : -6);
-      enemy.moveDx = px > ex ? 1 : -1;
-      enemy.moveDy = py > ey ? 1 : -1;
-      enemy.offsetX += enemy.moveDx * (TILE_W / 4);
-      enemy.offsetY += enemy.moveDy * (TILE_H / 4);
-      enemy.direction = enemy.moveDx > 0 ? (enemy.moveDy > 0 ? 0 : 3) : (enemy.moveDy > 0 ? 1 : 2);
-      return true;
-    }
+    const diagonal = this.startPoliceDiagonal(enemy);
+    if (diagonal) return true;
     const h = this.advanceHorizontalStep(enemy);
     if (h) {
       enemy.moveMode = "horizontal";
@@ -1093,6 +1080,75 @@ class Game {
     const v = this.advanceVerticalStep(enemy);
     if (v) enemy.moveMode = "vertical";
     return v;
+  }
+
+  startPoliceDiagonal(enemy) {
+    const ex = enemy.tile % GRID;
+    const ey = Math.floor(enemy.tile / GRID);
+    const px = this.playerTile % GRID;
+    const py = Math.floor(this.playerTile / GRID);
+    if (px === ex || py === ey) return false;
+    const dx = px > ex ? 1 : -1;
+    const dy = py > ey ? 1 : -1;
+    const target = enemy.tile + dx + dy * GRID;
+    if (target < 0 || target >= GRID * GRID || this.cellObj(target) === FLAME) return false;
+
+    let checks;
+    let direction;
+    let clearKind;
+    if (dx > 0 && dy < 0) {
+      checks = [
+        this.rightAccess(enemy.tile - GRID),
+        this.rightAccess(enemy.tile),
+        this.topAccess(enemy.tile),
+        this.topAccess(enemy.tile + 1),
+      ];
+      direction = 3;
+      clearKind = 3;
+    } else if (dx > 0 && dy > 0) {
+      checks = [
+        this.rightAccess(enemy.tile + GRID),
+        this.rightAccess(enemy.tile),
+        this.bottomAccess(enemy.tile),
+        this.bottomAccess(enemy.tile + 1),
+      ];
+      direction = 0;
+      clearKind = 0;
+    } else if (dx < 0 && dy > 0) {
+      checks = [
+        this.leftAccess(enemy.tile + GRID),
+        this.leftAccess(enemy.tile),
+        this.bottomAccess(enemy.tile),
+        this.bottomAccess(enemy.tile - 1),
+      ];
+      direction = 1;
+      clearKind = 1;
+    } else {
+      checks = [
+        this.leftAccess(enemy.tile - GRID),
+        this.leftAccess(enemy.tile),
+        this.topAccess(enemy.tile),
+        this.topAccess(enemy.tile - 1),
+      ];
+      direction = 2;
+      clearKind = 2;
+    }
+
+    if (checks.some((access) => access === BLOCKED)) return false;
+    this.clearDiagonalCrumbling(clearKind, enemy.tile);
+    enemy.direction = direction;
+    enemy.moveMode = "diagonal";
+    enemy.targetTile = target;
+    enemy.motionTile = enemy.tile;
+    enemy.moveDx = dx;
+    enemy.moveDy = dy;
+    enemy.offsetX += dx * (TILE_W / 4);
+    enemy.offsetY += dy * (TILE_H / 4);
+    if (Math.abs(enemy.offsetX) >= TILE_W && Math.abs(enemy.offsetY) >= TILE_H) {
+      this.completeEnemySegment(enemy, target);
+      enemy.moveMode = "";
+    }
+    return true;
   }
 
   advancePoliceDiagonal(enemy) {
@@ -1112,6 +1168,8 @@ class Game {
     enemy.targetTile = null;
     enemy.offsetX = 0;
     enemy.offsetY = 0;
+    enemy.moveDx = 0;
+    enemy.moveDy = 0;
   }
 
   resolveEnemySpecials(enemy) {
@@ -1152,6 +1210,30 @@ class Game {
 
   setVerticalWall(upperTile, lowerTile, value) {
     if (lowerTile >= 0 && lowerTile === upperTile + 6) this.cells[lowerTile].topWall = value;
+  }
+
+  clearDiagonalCrumbling(mode, tile) {
+    if (mode === 0) {
+      if (this.rightAccess(tile + GRID) === CRUMBLING) this.setHorizontalWall(tile + GRID, tile + GRID + 1, OPEN);
+      if (this.rightAccess(tile) === CRUMBLING) this.setHorizontalWall(tile, tile + 1, OPEN);
+      if (this.bottomAccess(tile) === CRUMBLING) this.setVerticalWall(tile, tile + GRID, OPEN);
+      if (this.bottomAccess(tile + 1) === CRUMBLING) this.setVerticalWall(tile + 1, tile + GRID + 1, OPEN);
+    } else if (mode === 1) {
+      if (this.leftAccess(tile + GRID) === CRUMBLING) this.setHorizontalWall(tile + GRID - 1, tile + GRID, OPEN);
+      if (this.leftAccess(tile) === CRUMBLING) this.setHorizontalWall(tile - 1, tile, OPEN);
+      if (this.bottomAccess(tile) === CRUMBLING) this.setVerticalWall(tile, tile + GRID, OPEN);
+      if (this.bottomAccess(tile - 1) === CRUMBLING) this.setVerticalWall(tile - 1, tile + GRID - 1, OPEN);
+    } else if (mode === 2) {
+      if (this.leftAccess(tile - GRID) === CRUMBLING) this.setHorizontalWall(tile - GRID - 1, tile - GRID, OPEN);
+      if (this.leftAccess(tile) === CRUMBLING) this.setHorizontalWall(tile - 1, tile, OPEN);
+      if (this.topAccess(tile) === CRUMBLING) this.setVerticalWall(tile - GRID, tile, OPEN);
+      if (this.topAccess(tile - 1) === CRUMBLING) this.setVerticalWall(tile - GRID - 1, tile - 1, OPEN);
+    } else if (mode === 3) {
+      if (this.rightAccess(tile - GRID) === CRUMBLING) this.setHorizontalWall(tile - GRID, tile - GRID + 1, OPEN);
+      if (this.rightAccess(tile) === CRUMBLING) this.setHorizontalWall(tile, tile + 1, OPEN);
+      if (this.topAccess(tile) === CRUMBLING) this.setVerticalWall(tile - GRID, tile, OPEN);
+      if (this.topAccess(tile + 1) === CRUMBLING) this.setVerticalWall(tile - GRID + 1, tile + 1, OPEN);
+    }
   }
 
   cellObj(tile) {

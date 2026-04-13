@@ -1029,7 +1029,10 @@ class Game {
     const access = down ? this.bottomAccess(enemy.tile) : this.topAccess(enemy.tile);
     const target = down ? enemy.tile + 6 : enemy.tile - 6;
     if (access === BLOCKED || this.cellObj(target) === FLAME) return false;
-    if (access === CRUMBLING) this.setVerticalWall(Math.min(enemy.tile, target), Math.max(enemy.tile, target), OPEN);
+    if (access === CRUMBLING) {
+      if (enemy.kind !== POLICE) return false;
+      this.setVerticalWall(Math.min(enemy.tile, target), Math.max(enemy.tile, target), OPEN);
+    }
     enemy.targetTile = target;
     enemy.motionTile = enemy.tile;
     enemy.direction = down ? 0 : 1;
@@ -1055,7 +1058,10 @@ class Game {
     const access = right ? this.rightAccess(enemy.tile) : this.leftAccess(enemy.tile);
     const target = right ? enemy.tile + 1 : enemy.tile - 1;
     if (access === BLOCKED || this.cellObj(target) === FLAME) return false;
-    if (access === CRUMBLING) this.setHorizontalWall(Math.min(enemy.tile, target), Math.max(enemy.tile, target), OPEN);
+    if (access === CRUMBLING) {
+      if (enemy.kind !== POLICE) return false;
+      this.setHorizontalWall(Math.min(enemy.tile, target), Math.max(enemy.tile, target), OPEN);
+    }
     enemy.targetTile = target;
     enemy.motionTile = enemy.tile;
     enemy.direction = right ? 3 : 2;

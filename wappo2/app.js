@@ -984,6 +984,7 @@ class Game {
     const mergedByTile = new Map();
     let changed = false;
     for (const enemy of this.enemies) {
+      if (enemy.offsetX !== 0 || enemy.offsetY !== 0) continue;
       const existing = mergedByTile.get(enemy.tile);
       if (!existing) {
         mergedByTile.set(enemy.tile, enemy);
@@ -1002,7 +1003,10 @@ class Game {
       existing.targetTile = null;
       existing.moveMode = "";
     }
-    if (changed) this.enemies = Array.from(mergedByTile.values());
+    if (changed) {
+      const movingEnemies = this.enemies.filter((enemy) => enemy.offsetX !== 0 || enemy.offsetY !== 0);
+      this.enemies = [...movingEnemies, ...Array.from(mergedByTile.values())];
+    }
     return changed;
   }
 

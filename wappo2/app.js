@@ -199,6 +199,7 @@ class Game {
     this.menuIndex = 0;
     this.settingsIndex = 0;
     this.settingsReturnScene = "main_menu";
+    this.selectedLevelIndex = 0;
     this.turnPhase = "idle";
     this.inputLocked = false;
     this.cells = [];
@@ -299,7 +300,9 @@ class Game {
   }
 
   mainMenuItems() {
-    return this.t("mainMenu");
+    return this.locale === "ru"
+      ? ["Новая игра", "Продолжить", "Выбор уровня", "Рекорды", "Настройки", "Помощь", "Об игре", "Выход"]
+      : ["New Game", "Continue", "Level Select", "High Score", "Settings", "Help", "About", "Quit"];
   }
 
   pauseMenuItems() {
@@ -314,6 +317,22 @@ class Game {
     return this.locale === "ru"
       ? ["Звук", "Вибрация", "Свет", "Скорость", "Язык", "Назад"]
       : ["Sound", "Vibration", "Light", "Speed", "Language", "Back"];
+  }
+
+  levelSelectTitle() {
+    return this.locale === "ru" ? "Р’С‹Р±РѕСЂ СѓСЂРѕРІРЅСЏ" : "Level Select";
+  }
+
+  levelSelectHint() {
+    return this.locale === "ru"
+      ? "Р’Р»РµРІРѕ/РІРІРµСЂС… Рё РІРїСЂР°РІРѕ/РІРЅРёР·: РІС‹Р±РѕСЂ"
+      : "Left/Up and Right/Down: choose";
+  }
+
+  levelSelectConfirmHint() {
+    return this.locale === "ru"
+      ? "Enter/РІРїСЂР°РІРѕ: РЅР°С‡Р°С‚СЊ   Esc: РЅР°Р·Р°Рґ"
+      : "Enter/Right: start   Esc: back";
   }
 
   settingsValueLabels() {
@@ -398,6 +417,18 @@ class Game {
     }
     if (["pause", "game_over", "milestone"].includes(this.scene)) {
       this.clickMenuList(this.currentMenuItems(), 128, 28, x, y);
+      return;
+    }
+    if (this.scene === "level_select") {
+      if (y >= 116 && y <= 144) {
+        this.cycleSelectedLevel(-1);
+      } else if (y >= 152 && y <= 180) {
+        this.cycleSelectedLevel(1);
+      } else if (y >= 214 && y <= 250) {
+        this.loadSelectedLevel();
+      } else {
+        this.scene = "main_menu";
+      }
       return;
     }
     if (this.scene === "settings") {
@@ -515,6 +546,20 @@ class Game {
     this.saveState();
   }
 
+  loadSelectedLevel() {
+    this.startedGame = true;
+    this.score = 0;
+    this.loadLevel(this.selectedLevelIndex, false);
+    this.scene = this.selectedLevelIndex === 0 && !this.tutorialDone ? "tutorial" : "game";
+    this.saveState();
+  }
+
+  cycleSelectedLevel(delta) {
+    const unlockedCount = this.lastProgressLevel + 1;
+    if (unlockedCount <= 0) return;
+    this.selectedLevelIndex = (this.selectedLevelIndex + delta + unlockedCount) % unlockedCount;
+  }
+
   onKey(event) {
     if (event.key.startsWith("Arrow")) event.preventDefault();
 
@@ -556,6 +601,19 @@ class Game {
       else if (event.key === "Escape") this.scene = this.settingsReturnScene;
       return;
     }
+    if (this.scene === "level_select") {
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        this.cycleSelectedLevel(-1);
+      } else if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        if (event.key === "ArrowRight") this.loadSelectedLevel();
+        else this.cycleSelectedLevel(1);
+      } else if (event.key === "Enter" || event.key === " ") {
+        this.loadSelectedLevel();
+      } else if (event.key === "Escape") {
+        this.scene = "main_menu";
+      }
+      return;
+    }
     if (["help", "about", "high_score"].includes(this.scene)) {
       if (event.key === "Escape" || event.key === "Enter" || event.key === " ") this.scene = "main_menu";
       return;
@@ -590,16 +648,19 @@ class Game {
         this.loadLevel(this.levelIndex, false);
         this.scene = this.levelIndex === 0 && !this.tutorialDone ? "tutorial" : "game";
       } else if (this.menuIndex === 2) {
-        this.scene = "high_score";
+        this.selectedLevelIndex = Math.min(this.levelIndex, this.lastProgressLevel);
+        this.scene = "level_select";
       } else if (this.menuIndex === 3) {
+        this.scene = "high_score";
+      } else if (this.menuIndex === 4) {
         this.settingsReturnScene = "main_menu";
         this.settingsIndex = 0;
         this.scene = "settings";
-      } else if (this.menuIndex === 4) {
-        this.scene = "help";
       } else if (this.menuIndex === 5) {
-        this.scene = "about";
+        this.scene = "help";
       } else if (this.menuIndex === 6) {
+        this.scene = "about";
+      } else if (this.menuIndex === 7) {
         this.scene = "title";
       }
       return;
@@ -667,6 +728,12 @@ class Game {
         if (action === "up") this.settingsIndex = (this.settingsIndex + this.settingsItems().length - 1) % this.settingsItems().length;
         else if (action === "down") this.settingsIndex = (this.settingsIndex + 1) % this.settingsItems().length;
         else if (action === "left" || action === "right") this.toggleSetting();
+        return;
+      }
+      if (this.scene === "level_select") {
+        if (action === "up" || action === "left") this.cycleSelectedLevel(-1);
+        else if (action === "down") this.cycleSelectedLevel(1);
+        else if (action === "right") this.loadSelectedLevel();
         return;
       }
       if (["help", "about", "high_score"].includes(this.scene)) {
@@ -750,10 +817,15 @@ class Game {
     }
     if (this.turnPhase === "enemy_anim") {
       let active = false;
-      for (const enemy of this.enemies) {
-        if (enemy.totalSteps <= 0) continue;
+      let enemyIndex = 0;
+      while (enemyIndex < this.enemies.length) {
+        const enemy = this.enemies[enemyIndex];
+        if (enemy.totalSteps <= 0) {
+          enemyIndex += 1;
+          continue;
+        }
         const moved = this.advanceEnemyStep(enemy);
-        enemy.totalSteps = Math.max(0, enemy.totalSteps - 1);
+        enemy.totalSteps = moved ? enemy.totalSteps - 1 : Math.max(0, enemy.totalSteps - 1);
         const segmentCompleted = moved && enemy.offsetX === 0 && enemy.offsetY === 0;
         if (segmentCompleted) {
           if (enemy.tile === this.playerTile) {
@@ -773,8 +845,22 @@ class Game {
               return;
             }
           }
+          if (this.mergeEnemies()) {
+            if (this.enemyAt(this.playerTile)) {
+              if (!this.tutorialScriptMode()) {
+                this.turnPhase = "death_anim";
+                this.deathFrame = 0;
+                this.deathTimer = 9;
+                return;
+              }
+            }
+            enemyIndex = 0;
+            active = this.enemies.some((item) => item.totalSteps > 0);
+            continue;
+          }
         }
-        if (moved && (enemy.offsetX !== 0 || enemy.offsetY !== 0 || enemy.totalSteps > 0)) active = true;
+        if (enemy.totalSteps > 0) active = true;
+        enemyIndex += 1;
       }
       if (!active) {
         this.turnPhase = "idle";
@@ -892,6 +978,32 @@ class Game {
       enemy.moveMode = "";
     }
     this.turnPhase = "enemy_anim";
+  }
+
+  mergeEnemies() {
+    const mergedByTile = new Map();
+    let changed = false;
+    for (const enemy of this.enemies) {
+      const existing = mergedByTile.get(enemy.tile);
+      if (!existing) {
+        mergedByTile.set(enemy.tile, enemy);
+        continue;
+      }
+      changed = true;
+      existing.kind = POLICE;
+      existing.direction = 0;
+      existing.facing = 0;
+      existing.totalSteps = 0;
+      existing.moveDx = 0;
+      existing.moveDy = 0;
+      existing.offsetX = 0;
+      existing.offsetY = 0;
+      existing.motionTile = existing.tile;
+      existing.targetTile = null;
+      existing.moveMode = "";
+    }
+    if (changed) this.enemies = Array.from(mergedByTile.values());
+    return changed;
   }
 
   advanceEnemyStep(enemy) {
@@ -1094,6 +1206,7 @@ class Game {
       return [
         this.assets.gameicon,
         this.assets.continueicon,
+        this.assets.restarticon,
         this.assets.highscore,
         this.assets.settingsicon,
         this.assets.helpicon,
@@ -1299,6 +1412,33 @@ class Game {
     this.ctx.fillText(this.t("toggleHint"), 26, 262);
   }
 
+  drawLevelSelect() {
+    this.ctx.drawImage(this.assets.bggame, 0, 0);
+    this.ctx.drawImage(this.assets.wood, 8, 35);
+    this.ctx.fillStyle = "#000";
+    this.ctx.font = "bold 18px Trebuchet MS";
+    this.ctx.fillText(this.levelSelectTitle(), 28, 78);
+
+    const levelText = `${this.t("levelLabel")}: ${this.selectedLevelIndex + 1}`;
+    const unlockedText = `${this.t("bestLevel")}: ${this.lastProgressLevel + 1}`;
+
+    this.ctx.font = "bold 16px Trebuchet MS";
+    this.ctx.fillText(levelText, 54, 132);
+    this.ctx.fillText(unlockedText, 54, 168);
+
+    this.ctx.font = "13px Trebuchet MS";
+    this.ctx.fillText(this.levelSelectHint(), 18, 224);
+    this.ctx.fillText(this.levelSelectConfirmHint(), 18, 248);
+
+    this.ctx.drawImage(this.assets.arrow, 26, 120);
+    this.ctx.save();
+    this.ctx.translate(38, 170);
+    this.ctx.rotate(Math.PI);
+    this.ctx.drawImage(this.assets.arrow, -12, -12);
+    this.ctx.restore();
+    this.ctx.drawImage(this.assets.CCicon, 120, 298);
+  }
+
   drawLevelResult() {
     this.ctx.drawImage(this.assets.bggame, 0, 0);
     this.ctx.drawImage(this.assets.wood, 8, 35);
@@ -1374,6 +1514,7 @@ class Game {
     if (this.scene === "about") return this.drawAbout();
     if (this.scene === "high_score") return this.drawHighScore();
     if (this.scene === "settings") return this.drawSettings();
+    if (this.scene === "level_select") return this.drawLevelSelect();
     if (this.scene === "level_result") return this.drawLevelResult();
     if (this.scene === "tutorial") return this.drawTutorialScreen();
     if (this.scene === "milestone") return this.drawMilestoneOverlay();

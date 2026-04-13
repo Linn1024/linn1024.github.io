@@ -1384,9 +1384,9 @@ class Game {
       const [x, y] = this.tileXY(tile);
       const cell = this.cells[tile];
       if (cell.rightWall === BLOCKED) this.ctx.drawImage(this.assets.vwall, x + TILE_W - 3, y);
-      else if (cell.rightWall === CRUMBLING) this.ctx.drawImage(this.assets.cDVWall, x + TILE_W - 3, y);
+      else if (cell.rightWall === CRUMBLING) this.ctx.drawImage(this.assets.cVWall, x + TILE_W - 3, y);
       if (cell.topWall === BLOCKED) this.ctx.drawImage(this.assets.hwall, x, y - 3);
-      else if (cell.topWall === CRUMBLING) this.ctx.drawImage(this.assets.cDHWall, x, y - 3);
+      else if (cell.topWall === CRUMBLING) this.ctx.drawImage(this.assets.cHWall, x, y - 3);
     }
     if (this.turnPhase !== "death_anim") {
       const [px, py] = this.tileXY(this.playerTile);

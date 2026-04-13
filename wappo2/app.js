@@ -754,7 +754,8 @@ class Game {
         if (enemy.totalSteps <= 0) continue;
         const moved = this.advanceEnemyStep(enemy);
         enemy.totalSteps = Math.max(0, enemy.totalSteps - 1);
-        if (enemy.offsetX === 0 && enemy.offsetY === 0) {
+        const segmentCompleted = moved && enemy.offsetX === 0 && enemy.offsetY === 0;
+        if (segmentCompleted) {
           if (enemy.tile === this.playerTile) {
             if (!this.tutorialScriptMode()) {
               this.turnPhase = "death_anim";
